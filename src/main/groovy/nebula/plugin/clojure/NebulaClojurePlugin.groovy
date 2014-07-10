@@ -15,11 +15,18 @@
  */
 package nebula.plugin.clojure
 
+import clojuresque.ClojureBasePlugin
+import clojuresque.ClojureExtrasPlugin
+import clojuresque.ClojureReplPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class NebulaClojurePlugin implements Plugin<Project> {
+
     @Override
     void apply(Project project) {
+        project.plugins.apply ClojureBasePlugin
+        project.plugins.apply ClojureReplPlugin
+        project.plugins.apply ClojureExtrasPlugin
     }
 }

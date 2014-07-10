@@ -15,11 +15,22 @@
  */
 package nebula.plugin.clojure
 
+import nebula.plugin.publishing.NebulaPublishingPlugin
 import nebula.test.ProjectSpec
 
 class NebulaClojurePluginSpec extends ProjectSpec {
     @Override
     void getPluginName() {
         'nebula-clojure'
+    }
+
+    def 'plays nice with others'() {
+        when:
+        project.plugins.apply(NebulaPublishingPlugin)
+        project.publishing.publications { } // Force publishing extension
+        project.plugins.apply(NebulaClojurePlugin)
+
+        then:
+        project.tasks.getByName('install')
     }
 }
