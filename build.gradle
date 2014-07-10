@@ -1,0 +1,18 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.12.+' }
+}
+
+description 'Small wrapper around clojuresque'
+apply plugin: 'nebula-plugin'
+
+contacts {
+    'justin@halfempty.org' {
+        moniker 'Justin Ryan'
+        github 'quidryan'
+    }
+}
+
+dependencies {
+    testCompile 'com.netflix.nebula:nebula-test:1.12.+'
+}
