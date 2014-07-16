@@ -28,5 +28,8 @@ class NebulaClojurePlugin implements Plugin<Project> {
         project.plugins.apply ClojureBasePlugin
         project.plugins.apply ClojureReplPlugin
         project.plugins.apply ClojureExtrasPlugin
+
+        // One part of clojars plugin we want
+        project.repositories.maven { url "http://clojars.org/repo" }
     }
 }
