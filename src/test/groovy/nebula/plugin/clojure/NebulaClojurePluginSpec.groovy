@@ -19,7 +19,6 @@ import nebula.plugin.publishing.NebulaPublishingPlugin
 import nebula.test.ProjectSpec
 
 class NebulaClojurePluginSpec extends ProjectSpec {
-    @Override
     void getPluginName() {
         'nebula-clojure'
     }

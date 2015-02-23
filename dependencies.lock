@@ -1,5 +1,5 @@
 {
   "clojuresque:clojuresque": { "locked": "1.7.0", "requested": "1.+" },
-  "com.netflix.nebula:nebula-publishing-plugin": { "locked": "1.12.15", "requested": "1.12.+" },
-  "com.netflix.nebula:nebula-test": { "locked": "1.12.2", "requested": "1.12.+" }
+  "com.netflix.nebula:nebula-publishing-plugin": { "locked": "2.2.1", "requested": "2.2.+" },
+  "com.netflix.nebula:nebula-test": { "locked": "2.2.0", "requested": "2.2.+" }
 }

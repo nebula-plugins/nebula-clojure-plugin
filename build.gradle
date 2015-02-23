@@ -1,6 +1,5 @@
-buildscript {
-    repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.12.+' }
+plugins {
+    id 'nebula.nebula-plugin' version '2.2.0'
 }
 
 // Any callers need to have this repository too.
@@ -9,7 +8,6 @@ repositories {
 }
 
 description 'Small wrapper around clojuresque'
-apply plugin: 'nebula-plugin'
 
 contacts {
     'justin@halfempty.org' {
@@ -20,6 +18,6 @@ contacts {
 
 dependencies {
     compile 'clojuresque:clojuresque:1.+'
-    testCompile 'com.netflix.nebula:nebula-publishing-plugin:1.12.+'
-    testCompile 'com.netflix.nebula:nebula-test:1.12.+'
+    testCompile "com.netflix.nebula:nebula-publishing-plugin:${gradleVersion}.+"
+    testCompile "com.netflix.nebula:nebula-test:${gradleVersion}.+"
 }
