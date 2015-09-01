@@ -15,7 +15,7 @@
  */
 package nebula.plugin.clojure
 
-import nebula.plugin.publishing.NebulaPublishingPlugin
+import nebula.plugin.publishing.maven.MavenPublishPlugin
 import nebula.test.ProjectSpec
 
 class NebulaClojurePluginSpec extends ProjectSpec {
@@ -25,11 +25,11 @@ class NebulaClojurePluginSpec extends ProjectSpec {
 
     def 'plays nice with others'() {
         when:
-        project.plugins.apply(NebulaPublishingPlugin)
+        project.plugins.apply(MavenPublishPlugin)
         project.publishing.publications { } // Force publishing extension
         project.plugins.apply(NebulaClojurePlugin)
 
         then:
-        project.tasks.getByName('install')
+        project.tasks.getByName('publishToMavenLocal')
     }
 }
