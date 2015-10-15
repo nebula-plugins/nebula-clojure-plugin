@@ -51,7 +51,7 @@ dependencies {
     testCompile 'com.netflix.nebula:nebula-publishing-plugin:4.+'
 }
 
-apply from: 'https://raw.githubusercontent.com/nebula-plugins/nebula-core/596569bf3e7bd32da076784a8273dbd145bc016f/common.gradle'
+apply from: 'https://raw.githubusercontent.com/nebula-plugins/nebula-core/d2c65b66452da8768aeee1beaf96a42057a9208d/common.gradle'
 
 pluginBundle {
     plugins {
