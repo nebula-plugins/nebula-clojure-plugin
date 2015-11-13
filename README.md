@@ -18,11 +18,11 @@ To include, add the following to your build.gradle
       repositories { maven { url 'http://clojars.org/repo' } }
 
       dependencies {
-        classpath 'com.netflix.nebula:nebula-clojure-plugin:2.2.+'
+        classpath 'com.netflix.nebula:nebula-clojure-plugin:3.0.1'
       }
     }
 
-    apply plugin: 'nebula-clojure'
+    apply plugin: 'nebula.clojure'
 
 -or-
 
@@ -31,5 +31,5 @@ To include, add the following to your build.gradle
     }
 
     plugins {
-    	id 'nebula.nebula-clojure' version '2.2.0'
+    	id 'nebula.clojure' version '3.0.1'
     }
