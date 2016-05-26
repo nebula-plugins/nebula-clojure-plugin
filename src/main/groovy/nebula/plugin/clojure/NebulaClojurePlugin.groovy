@@ -15,9 +15,9 @@
  */
 package nebula.plugin.clojure
 
-import clojuresque.ClojureBasePlugin
-import clojuresque.ClojureExtrasPlugin
-import clojuresque.ClojureReplPlugin
+import nebula.plugin.clojuresque.ClojureBasePlugin
+import nebula.plugin.clojuresque.ClojureExtrasPlugin
+import nebula.plugin.clojuresque.ClojureReplPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

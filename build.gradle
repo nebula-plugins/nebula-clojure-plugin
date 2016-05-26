@@ -36,7 +36,10 @@ contacts {
 }
 
 dependencies {
-    compile 'clojuresque:clojuresque:1.+'
+    compile 'org.clojure:clojure:1.7.0'
+    compile 'de.kotka.gradle:gradle-utils:0.2.2'
+    compile 'org.clojure:tools.namespace:0.2.11'
+    compile 'us.bpsm:edn-java:0.4.3'
     testCompile 'com.netflix.nebula:nebula-publishing-plugin:4.+'
 }
 
