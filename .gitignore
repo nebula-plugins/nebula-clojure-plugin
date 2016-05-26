@@ -1,6 +1,6 @@
 .gradle/
 build/
-.gradletasknamecache
+gradle.properties
 
 *.iml
 *.ipr
