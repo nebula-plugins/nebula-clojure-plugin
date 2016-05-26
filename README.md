@@ -7,31 +7,8 @@ nebula-clojure-plugin
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/nebula-plugins/nebula-clojure-plugin?utm_source=badgeutm_medium=badgeutm_campaign=pr-badge)
 [![MIT](https://img.shields.io/github/license/nebula-plugins/nebula-clojure-plugin.svg)](https://opensource.org/licenses/MIT)
 
+Plugin providing Clojuresque with compatibility fixes for Gradle 2.12 and later. Also avoids the including of clojars logic in a build.
 
-Small wrapper around clojuresque, to avoid the including of clojars logic. We found that the clojars plugin. We're still
-just applying the other core clojuresque plugins.
+# Quick Start
 
-## Applying the Plugin
-
-To include, add the following to your build.gradle
-
-    buildscript {
-      repositories { jcenter() }
-      repositories { maven { url 'http://clojars.org/repo' } }
-
-      dependencies {
-        classpath 'com.netflix.nebula:nebula-clojure-plugin:3.0.1'
-      }
-    }
-
-    apply plugin: 'nebula.clojure'
-
--or-
-
-    buildscript {
-    	repositories { maven { url 'http://clojars.org/repo' } }
-    }
-
-    plugins {
-    	id 'nebula.clojure' version '3.0.1'
-    }
+Refer to the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/nebula.clojure) for instructions on how to apply the plugin.
