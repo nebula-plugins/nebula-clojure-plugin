@@ -13,10 +13,11 @@
 package nebula.plugin.clojuresque.tasks
 
 import kotka.gradle.utils.tasks.GenericSourceSet
+import org.gradle.api.internal.file.FileResolver
 
 @GenericSourceSet(sourceName="clojure", sourcePatterns=["**/*.clj"])
 class ClojureSourceSet {
-    def protected initSourceSet(displayString, fileResolver) {
+    def protected initSourceSet(String displayString, FileResolver fileResolver) {
         new ClojureSourceDirectorySet(displayString, fileResolver)
     }
 }

@@ -13,16 +13,20 @@
 package nebula.plugin.clojuresque.tasks
 
 import kotka.gradle.utils.Delayed
-
 import org.gradle.api.internal.file.DefaultSourceDirectorySet
+import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.internal.file.collections.DefaultDirectoryFileTreeFactory
 
-@groovy.transform.InheritConstructors
 class ClojureSourceDirectorySet extends DefaultSourceDirectorySet {
     @Delayed
     def aotCompile = false
 
     @Delayed
     def warnOnReflection = false
+
+    ClojureSourceDirectorySet(String name, FileResolver fileResolver) {
+        super(name, fileResolver, new DefaultDirectoryFileTreeFactory())
+    }
 
     void includeNamespace(String pattern) {
         include(
