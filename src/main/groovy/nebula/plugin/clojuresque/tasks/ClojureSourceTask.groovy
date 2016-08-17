@@ -12,10 +12,11 @@
 
 package nebula.plugin.clojuresque.tasks
 
-import kotka.gradle.utils.tasks.SourceDirectoryTask
+import nebula.plugin.utils.tasks.SourceDirectoryTask
 
 public class ClojureSourceTask extends SourceDirectoryTask {
     /* Duplicate the functionality of ClojureSourceSet. */
+
     public ClojureSourceTask includeNamespace(String pattern) {
         include(pattern.replaceAll("-", "_").replaceAll("\\.", "/") + ".clj")
         return this
