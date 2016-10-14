@@ -24,11 +24,6 @@
 (defn add-counters [results counters]
   (merge-with + results counters))
 
-(defn check-result
-  [result]
-  (when (or (pos? (:fail result)) (pos? (:error result)))
-    (System/exit 1)))
-
 (defn escape-file-path 
   "Escapes the given file path so that it's safe for inclusion in a Clojure string literal."
   [directory file]
@@ -72,20 +67,16 @@
         ; test each namespace individually to allow per ns reporting of failures at the end
         (doseq [namespace namespaces]
           (test-namespace-with-junit-output namespace junit-output-dir))
-        (if (:test @results)
-          (do
-            (println "\nTotals:")
-            (report @results)
-            (println)
-            (if (successful? @results)
-              (do
-                (println "Success!!!")
-                true)
-              (do
-                (println "\n!!! There were test failures:")
-                ; Print results for each namespace which was unsuccessful
-                (doseq [[ns summary] @failed]
-                  (println ns ": " (:fail summary) "failures," (:error summary) "errors."))
-                (println)
-                false)))
-          true)))))
+        (when (:test @results)
+          (println "\nTotals:")
+          (report @results)
+          (println)
+          (if (successful? @results)
+            (println "Success!!!")
+            (do
+              (println "\n!!! There were test failures:")
+              ; Print results for each namespace which was unsuccessful
+              (doseq [[ns summary] @failed]
+                (println ns ": " (:fail summary) "failures," (:error summary) "errors."))
+              (println)
+              (System/exit 1))))))))
