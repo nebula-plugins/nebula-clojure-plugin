@@ -7,7 +7,9 @@
 
 (defn check-result
   [result]
-  (and (zero? (:fail result)) (zero? (:error result))))
+  (let [{:keys [fail error]} result]
+    (if (not (zero? (reduce + [fail error])))
+        (throw (Exception. (clojure.string/join " " ["There are" fail "test failures and" error "errors."]))))))
 
 (defn test-namespaces
   [{:keys [source-files]}]
