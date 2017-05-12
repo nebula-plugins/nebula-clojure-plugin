@@ -42,7 +42,12 @@
 
 (deftask main
   [{:keys [junit tests] :as options}]
-  (cond
-    junit       (test-junit/test-namespaces options)
-    (seq tests) (test-vars options)
-    :else       (test-namespaces options)))
+  (try
+    (cond
+      junit       (test-junit/test-namespaces options)
+      (seq tests) (test-vars options)
+      :else       (test-namespaces options))
+  ;; Some stray non-daemon threads may cause the JVM to hang on exit.
+  ;; Call this after all tests have run to allow proper shutdown.
+  (finally
+    (shutdown-agents))))
