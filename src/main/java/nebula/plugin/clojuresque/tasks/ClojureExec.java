@@ -46,12 +46,22 @@ public class ClojureExec extends ConventionTask implements JavaExecSpec {
         return clojureExecAction.getAllJvmArgs();
     }
 
+    @Override
+    public void setAllJvmArgs(List<String> list) {
+        clojureExecAction.setAllJvmArgs(list);
+    }
+
     public void setAllJvmArgs(Iterable<?> arguments) {
         clojureExecAction.setAllJvmArgs(arguments);
     }
 
     public List<String> getJvmArgs() {
         return clojureExecAction.getJvmArgs();
+    }
+
+    @Override
+    public void setJvmArgs(List<String> list) {
+        clojureExecAction.setJvmArgs(list);
     }
 
     public void setJvmArgs(Iterable<?> arguments) {
@@ -159,6 +169,12 @@ public class ClojureExec extends ConventionTask implements JavaExecSpec {
         return this;
     }
 
+    @Override
+    public JavaExecSpec setArgs(List<String> list) {
+        clojureExecAction.setArgs(list);
+        return this;
+    }
+
     public ClojureExec setClasspath(FileCollection classpath) {
         clojureExecAction.setClasspath(classpath);
         return this;
@@ -182,6 +198,11 @@ public class ClojureExec extends ConventionTask implements JavaExecSpec {
         return clojureExecAction.getExecutable();
     }
 
+    @Override
+    public void setExecutable(String s) {
+        clojureExecAction.setExecutable(s);
+    }
+
     public void setExecutable(Object executable) {
         clojureExecAction.setExecutable(executable);
     }
@@ -193,6 +214,11 @@ public class ClojureExec extends ConventionTask implements JavaExecSpec {
 
     public File getWorkingDir() {
         return clojureExecAction.getWorkingDir();
+    }
+
+    @Override
+    public void setWorkingDir(File file) {
+        clojureExecAction.setWorkingDir(file);
     }
 
     public void setWorkingDir(Object dir) {

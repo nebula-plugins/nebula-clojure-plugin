@@ -39,7 +39,8 @@ dependencies {
     compile 'de.kotka.gradle:gradle-utils:0.2.2'
     compile 'org.clojure:tools.namespace:0.2.11'
     compile 'us.bpsm:edn-java:0.4.3'
-    testCompile 'com.netflix.nebula:nebula-publishing-plugin:4.+'
+
+    testCompile 'com.netflix.nebula:nebula-publishing-plugin:5.+'
 }
 
 pluginBundle {
