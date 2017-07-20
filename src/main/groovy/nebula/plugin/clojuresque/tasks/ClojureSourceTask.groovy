@@ -12,18 +12,19 @@
 
 package nebula.plugin.clojuresque.tasks
 
+import nebula.plugin.clojuresque.Util
 import nebula.plugin.utils.tasks.SourceDirectoryTask
 
 public class ClojureSourceTask extends SourceDirectoryTask {
     /* Duplicate the functionality of ClojureSourceSet. */
 
     public ClojureSourceTask includeNamespace(String pattern) {
-        include(pattern.replaceAll("-", "_").replaceAll("\\.", "/") + ".clj")
+        include(Util.namespaceFile(pattern))
         return this
     }
 
     public ClojureSourceTask excludeNamespace(String pattern) {
-        exclude(pattern.replaceAll("-", "_").replaceAll("\\.", "/") + ".clj")
+        exclude(Util.namespaceFile(pattern))
         return this
     }
 }

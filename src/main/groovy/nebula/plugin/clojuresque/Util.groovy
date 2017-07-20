@@ -18,6 +18,8 @@ import us.bpsm.edn.Keyword
 import us.bpsm.edn.printer.Printers
 
 class Util {
+    static final List<String> SOURCE_EXTENSIONS = Arrays.asList(".clj", ".cljs")
+
     static Properties properties(plugin) {
         def props = new Properties()
 
@@ -85,5 +87,9 @@ class Util {
         return l.reverse().collect { toInputStream(it) }.inject { t, h ->
             new SequenceInputStream(h, t)
         }
+    }
+
+    static List<String> namespaceFile(String pattern) {
+        SOURCE_EXTENSIONS.collect { pattern.replaceAll("-", "_").replaceAll("\\.", "/") + it }
     }
 }

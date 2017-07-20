@@ -13,6 +13,7 @@
 package nebula.plugin.clojuresque.tasks
 
 import kotka.gradle.utils.Delayed
+import nebula.plugin.clojuresque.Util
 import org.gradle.api.internal.file.DefaultSourceDirectorySet
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.internal.file.collections.DefaultDirectoryFileTreeFactory
@@ -29,14 +30,10 @@ class ClojureSourceDirectorySet extends DefaultSourceDirectorySet {
     }
 
     void includeNamespace(String pattern) {
-        include(
-            pattern.replaceAll("-", "_").replaceAll("\\.", "/") + ".clj"
-        )
+        include(Util.namespaceFile(pattern))
     }
 
     void excludeNamespace(String pattern) {
-        exclude(
-            pattern.replaceAll("-", "_").replaceAll("\\.", "/") + ".clj"
-        )
+        exclude(Util.namespaceFile(pattern))
     }
 }
