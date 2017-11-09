@@ -6,10 +6,9 @@
 (refer 'clojuresque.util :only '[deftask namespaces])
 
 (defn check-result
-  [result]
-  (let [{:keys [fail error]} result]
-    (if (not (zero? (reduce + [fail error])))
-        (throw (Exception. (clojure.string/join " " ["There are" fail "test failures and" error "errors."]))))))
+  [{:keys [fail error], :as _result}]
+  (and (= 0 fail)
+       (= 0 error)))
 
 (defn test-namespaces
   [{:keys [source-files]}]
@@ -44,12 +43,16 @@
   [{:keys [junit tests] :as options}]
   (let [exit-code (atom 0)]
     (try
-      (cond
-        junit (test-junit/test-namespaces options)
-        (seq tests) (test-vars options)
-        :else (test-namespaces options))
-      (catch Throwable _t
-        (reset! exit-code -1))
+      (let [success? (cond
+                       junit (test-junit/test-namespaces options)
+                       (seq tests) (test-vars options)
+                       :else (test-namespaces options))]
+        (when-not success?
+          (reset! exit-code -1))
+        success?)
+      (catch Throwable t
+        (println "Exception thrown while running tests: " t)
+        (reset! exit-code -2))
       ;; Some stray non-daemon threads may cause the JVM to hang on exit.
       ;; Call this after all tests have run to allow proper shutdown.
       (finally
