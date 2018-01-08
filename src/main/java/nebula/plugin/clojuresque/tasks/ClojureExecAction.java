@@ -12,20 +12,19 @@
 
 package nebula.plugin.clojuresque.tasks;
 
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.process.ExecResult;
 import org.gradle.process.internal.ExecHandle;
 import org.gradle.process.internal.JavaExecAction;
 import org.gradle.process.internal.JavaExecHandleBuilder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class ClojureExecAction extends JavaExecHandleBuilder implements JavaExecAction {
-    public ClojureExecAction(FileResolver fileResolver) {
-        super(fileResolver);
+    public  ClojureExecAction(FileResolver fileResolver, Executor executor) {
+        super(fileResolver, executor);
         setMain("-");
     }
 
