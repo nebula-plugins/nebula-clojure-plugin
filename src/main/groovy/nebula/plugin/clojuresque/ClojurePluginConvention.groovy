@@ -16,6 +16,7 @@ import nebula.plugin.clojuresque.tasks.ClojureExecAction
 import kotka.gradle.utils.ConfigureUtil
 
 import org.gradle.api.Project
+import org.gradle.internal.concurrent.DefaultExecutorFactory
 import org.gradle.process.ExecResult
 
 import org.slf4j.Logger
@@ -31,7 +32,7 @@ class ClojurePluginConvention {
 
     public ExecResult clojureexec(Closure spec) {
         ClojureExecAction action = ConfigureUtil.configure(
-            new ClojureExecAction(project.fileResolver),
+            new ClojureExecAction(project.fileResolver, new DefaultExecutorFactory().create("clojure executor")),
             spec
         )
         return action.execute()
