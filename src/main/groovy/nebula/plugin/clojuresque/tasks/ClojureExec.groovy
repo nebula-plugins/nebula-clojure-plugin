@@ -21,6 +21,7 @@ import org.gradle.internal.concurrent.DefaultExecutorFactory;
 import org.gradle.process.JavaExecSpec;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
+import org.gradle.process.internal.JavaExecAction;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 
 public class ClojureExec extends ConventionTask implements JavaExecSpec {
-    private ClojureExecAction clojureExecAction;
+    private JavaExecAction clojureExecAction;
 
     public ClojureExec() {
         super();
 
         FileResolver fileResolver = ((ProjectInternal)getProject()).getFileResolver();
-        clojureExecAction = new ClojureExecAction(fileResolver, new DefaultExecutorFactory().create("nebula clojure executor"));
+        clojureExecAction = ClojureExecActionFactory.create(fileResolver, getProject().getGradle().getGradleVersion());
     }
 
     @TaskAction
