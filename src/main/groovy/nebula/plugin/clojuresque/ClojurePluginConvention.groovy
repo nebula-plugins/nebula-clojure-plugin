@@ -16,7 +16,6 @@ import kotka.gradle.utils.ConfigureUtil
 import nebula.plugin.clojuresque.tasks.ClojureExecAction
 import org.gradle.api.Project
 import org.gradle.process.ExecResult
-import org.gradle.process.internal.JavaExecAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -29,7 +28,7 @@ class ClojurePluginConvention {
     }
 
     public ExecResult clojureexec(Closure spec) {
-        JavaExecAction action = ConfigureUtil.configure(
+        def action = ConfigureUtil.configure(
             new ClojureExecAction(project.fileResolver, project.gradle.gradleVersion),
             spec
         )
