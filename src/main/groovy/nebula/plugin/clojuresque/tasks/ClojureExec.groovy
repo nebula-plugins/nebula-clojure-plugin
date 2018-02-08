@@ -17,17 +17,10 @@ import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.concurrent.DefaultExecutorFactory;
 import org.gradle.process.JavaExecSpec;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
 import org.gradle.process.internal.JavaExecAction;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 
 class ClojureExec extends ConventionTask implements JavaExecSpec {
     private JavaExecAction clojureExecAction

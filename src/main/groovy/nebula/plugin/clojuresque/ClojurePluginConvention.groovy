@@ -14,7 +14,6 @@ package nebula.plugin.clojuresque
 
 import kotka.gradle.utils.ConfigureUtil
 import nebula.plugin.clojuresque.tasks.ClojureExecAction
-import nebula.plugin.clojuresque.tasks.ClojureExecActionFactory
 import org.gradle.api.Project
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.JavaExecAction
