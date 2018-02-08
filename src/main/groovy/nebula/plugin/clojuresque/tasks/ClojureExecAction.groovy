@@ -14,13 +14,14 @@
 package nebula.plugin.clojuresque.tasks
 
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.process.ExecResult
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.internal.*
 import org.gradle.util.GradleVersion
 
-class ClojureExecAction implements JavaExecSpec {
+class ClojureExecAction implements JavaExecAction, JavaExecSpec {
     @Delegate
-    JavaExecHandleBuilder base
+    JavaExecAction base
 
     ClojureExecAction(FileResolver fileResolver, String gradleVersion) {
         base = create(fileResolver, gradleVersion)
@@ -34,26 +35,34 @@ class ClojureExecAction implements JavaExecSpec {
         } else {
             action = new DefaultJavaExecAction(fileResolver)
         }
-        action.setMain("-")
+        action.setMain("clojure.main")
+        action.args('-')
 
         action
     }
 
-    List<String> getAllArguments() {
-        List<String> arguments = new ArrayList<>()
-        arguments.addAll(getAllJvmArgs())
-        arguments.add("clojure.main")
-
-        String m = getMain()
-        if ("-".equals(m)) {
-            arguments.add("-")
+    @Override
+    JavaExecSpec setMain(String var1) {
+        if (var1 == '-') {
+            base.setMain('clojure.main')
+            List<String> args = base.getArgs()
+            if (args[0] == '-m') {
+                args.remove(1)
+                args.remove(0)
+                base.setArgs(["-"] + args)
+            } else if (args[0] != '-') {
+                base.setArgs(["-"] + args)
+            }
         } else {
-            arguments.add("-m")
-            arguments.add(m)
+            base.setMain("clojure.main")
+            List<String> args = base.getArgs()
+            if (args[0] == '-m') {
+                args.remove(1)
+                args.remove(0)
+            } else if (args[0] == '-') {
+                args.remove(0)
+            }
+            base.setArgs(['-m', var1] + args)
         }
-
-        arguments.addAll(getArgs())
-
-        return arguments
     }
 }

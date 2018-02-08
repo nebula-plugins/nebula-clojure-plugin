@@ -17,6 +17,7 @@
 
 plugins {
     id 'nebula.plugin-plugin' version '6.1.1'
+    id 'java-gradle-plugin'
 }
 
 // Any callers need to have this repository too.
@@ -31,6 +32,10 @@ contacts {
         moniker 'Justin Ryan'
         github 'quidryan'
     }
+    'rob.spieldenner@gmail.com' {
+        moniker 'Rob Spieldenner'
+        github 'rspieldenner'
+    }
 }
 
 dependencies {
@@ -39,6 +44,7 @@ dependencies {
     compile 'org.clojure:tools.namespace:0.2.11'
     compile 'us.bpsm:edn-java:0.4.3'
 
+    testCompile gradleTestKit()
     testCompile 'com.netflix.nebula:nebula-publishing-plugin:5.+'
 }
 
