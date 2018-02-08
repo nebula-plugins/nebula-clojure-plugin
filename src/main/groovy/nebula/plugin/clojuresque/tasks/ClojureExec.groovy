@@ -20,10 +20,9 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.JavaExecSpec;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
-import org.gradle.process.internal.JavaExecAction;
 
 class ClojureExec extends ConventionTask implements JavaExecSpec {
-    private JavaExecAction clojureExecAction
+    private ClojureExecAction clojureExecAction
 
     ClojureExec() {
         super()

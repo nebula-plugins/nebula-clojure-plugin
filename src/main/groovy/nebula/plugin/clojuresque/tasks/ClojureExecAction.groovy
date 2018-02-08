@@ -38,7 +38,7 @@ class ClojureExecAction implements JavaExecSpec {
 
         action
     }
-    
+
     List<String> getAllArguments() {
         List<String> arguments = new ArrayList<>()
         arguments.addAll(getAllJvmArgs())
