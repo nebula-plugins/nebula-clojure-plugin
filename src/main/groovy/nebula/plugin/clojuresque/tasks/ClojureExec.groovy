@@ -29,14 +29,14 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-public class ClojureExec extends ConventionTask implements JavaExecSpec {
-    private JavaExecAction clojureExecAction;
+class ClojureExec extends ConventionTask implements JavaExecSpec {
+    private JavaExecAction clojureExecAction
 
-    public ClojureExec() {
-        super();
+    ClojureExec() {
+        super()
 
-        FileResolver fileResolver = ((ProjectInternal)getProject()).getFileResolver();
-        clojureExecAction = ClojureExecActionFactory.create(fileResolver, getProject().getGradle().getGradleVersion());
+        FileResolver fileResolver = ((ProjectInternal)getProject()).getFileResolver()
+        clojureExecAction = new ClojureExecAction(fileResolver, getProject().getGradle().getGradleVersion())
     }
 
     @TaskAction

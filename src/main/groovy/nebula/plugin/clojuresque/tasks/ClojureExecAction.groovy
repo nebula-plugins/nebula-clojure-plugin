@@ -11,13 +11,21 @@
  * (cf. file MIT distributed with the source code).
  */
 
-package nebula.plugin.clojuresque.tasks;
+package nebula.plugin.clojuresque.tasks
 
 import org.gradle.api.internal.file.FileResolver
-import org.gradle.process.internal.*;
-import org.gradle.util.GradleVersion;
+import org.gradle.process.JavaExecSpec
+import org.gradle.process.internal.*
+import org.gradle.util.GradleVersion
 
-class ClojureExecActionFactory {
+class ClojureExecAction implements JavaExecSpec {
+    @Delegate
+    JavaExecHandleBuilder base
+
+    ClojureExecAction(FileResolver fileResolver, String gradleVersion) {
+        base = create(fileResolver, gradleVersion)
+    }
+
     static JavaExecAction create(FileResolver fileResolver, String gradleVersion) {
         boolean hasExecFactory = GradleVersion.version(gradleVersion) > GradleVersion.version("4.4.1")
         def action
@@ -26,18 +34,18 @@ class ClojureExecActionFactory {
         } else {
             action = new DefaultJavaExecAction(fileResolver)
         }
-        action.setMain("-");
-        action.setArgs(getAllArguments(action))
+        action.setMain("-")
 
         action
     }
 
-    static List<String> getAllArguments(JavaExecAction action) {
+    @Override
+    List<String> getAllArguments() {
         List<String> arguments = new ArrayList<>()
-        arguments.addAll(action.getAllJvmArgs())
+        arguments.addAll(getAllJvmArgs())
         arguments.add("clojure.main")
 
-        String m = action.getMain()
+        String m = getMain()
         if ("-".equals(m)) {
             arguments.add("-")
         } else {
@@ -45,7 +53,7 @@ class ClojureExecActionFactory {
             arguments.add(m)
         }
 
-        arguments.addAll(action.getArgs())
+        arguments.addAll(getArgs())
 
         return arguments
     }
