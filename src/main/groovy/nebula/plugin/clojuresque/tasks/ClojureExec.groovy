@@ -16,7 +16,8 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.ConventionTask;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskAction
+import org.gradle.process.CommandLineArgumentProvider;
 import org.gradle.process.JavaExecSpec;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
@@ -67,9 +68,15 @@ class ClojureExec extends ConventionTask implements JavaExecSpec {
         return this;
     }
 
+    @Override
     public ClojureExec jvmArgs(Object... arguments) {
         clojureExecAction.jvmArgs(arguments);
         return this;
+    }
+
+    @Override
+    List<CommandLineArgumentProvider> getJvmArgumentProviders() {
+        return clojureExecAction.getJvmArgumentProviders()
     }
 
     public Map<String, Object> getSystemProperties() {
@@ -151,6 +158,11 @@ class ClojureExec extends ConventionTask implements JavaExecSpec {
     public ClojureExec setArgs(Iterable<?> applicationArgs) {
         clojureExecAction.setArgs(applicationArgs);
         return this;
+    }
+
+    @Override
+    List<CommandLineArgumentProvider> getArgumentProviders() {
+        return clojureExecAction.getArgumentProviders()
     }
 
     public ClojureExec args(Object... args) {
