@@ -55,11 +55,11 @@
     },
     "integTestCompile": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -81,11 +81,11 @@
     },
     "integTestCompileClasspath": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -107,11 +107,11 @@
     },
     "integTestRuntime": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -133,11 +133,11 @@
     },
     "integTestRuntimeClasspath": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -159,12 +159,12 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.7.8"
+            "locked": "0.8.1"
         }
     },
     "jacocoAnt": {
         "org.jacoco:org.jacoco.ant": {
-            "locked": "0.7.8"
+            "locked": "0.8.1"
         }
     },
     "runtime": {
@@ -205,11 +205,11 @@
     },
     "testCompile": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -231,11 +231,11 @@
     },
     "testCompileClasspath": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -257,11 +257,11 @@
     },
     "testRuntime": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -283,11 +283,11 @@
     },
     "testRuntimeClasspath": {
         "com.netflix.nebula:nebula-publishing-plugin": {
-            "locked": "5.1.1",
+            "locked": "5.1.5",
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "de.kotka.gradle:gradle-utils": {
