@@ -14,6 +14,7 @@ package nebula.plugin.clojuresque
 
 import nebula.plugin.clojuresque.tasks.ClojureCompile
 import nebula.plugin.clojuresque.tasks.ClojureDoc
+import nebula.plugin.clojuresque.tasks.ClojureRun
 import nebula.plugin.clojuresque.tasks.ClojureSourceSet
 import nebula.plugin.clojuresque.tasks.ClojureTest
 import nebula.plugin.clojuresque.tasks.ClojureUploadConvention
@@ -44,6 +45,7 @@ public class ClojureBasePlugin implements Plugin<Project> {
         configureCompilation(project)
         configureDocs(project)
         configureTests(project)
+        configureRun(project)
         configureClojarsUpload(project)
     }
 
@@ -126,6 +128,21 @@ public class ClojureBasePlugin implements Plugin<Project> {
             }
         }
         project.tasks.test.dependsOn clojureTest
+    }
+
+    private void configureRun(project) {
+        project.sourceSets.main { set ->
+            def compileTaskName = set.getCompileTaskName("clojure")
+            def runTaskName = set.getTaskName(null, "clojureRun")
+            def compileTask = project.tasks[compileTaskName]
+            def task = project.task(runTaskName, type: ClojureRun) {
+                from set.clojure
+                delayedJvmOptions = { compileTask.jvmOptions }
+                delayedClasspath = { compileTask.classpath }
+                description = "Run a Clojure command."
+                group = CLOJURE_GROUP
+            }
+        }
     }
 
     private void configureClojarsUpload(project) {
