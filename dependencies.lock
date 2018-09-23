@@ -59,8 +59,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -85,8 +85,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -111,8 +111,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -137,8 +137,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -209,8 +209,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -235,8 +235,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -261,8 +261,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
@@ -287,8 +287,8 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
-            "requested": "6.+"
+            "locked": "7.1.0",
+            "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
             "locked": "0.2.2",
