@@ -31,5 +31,8 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
         then:
         noExceptionThrown()
+
+        and:
+        new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
     }
 }
