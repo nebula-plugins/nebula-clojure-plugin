@@ -16,6 +16,8 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
             }
             '''.stripIndent()
 
+        settingsFile << 'rootProject.name="can-compile-clojure"'
+
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
         new File(clojurefiles, 'app.clj').text = '''\

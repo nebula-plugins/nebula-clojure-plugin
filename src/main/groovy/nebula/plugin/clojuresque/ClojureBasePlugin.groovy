@@ -76,7 +76,7 @@ public class ClojureBasePlugin implements Plugin<Project> {
                 from set.clojure
                 delayedAotCompile       = { set.clojure.aotCompile }
                 delayedWarnOnReflection = { set.clojure.warnOnReflection }
-                delayedDestinationDir   = { set.output.classesDir }
+                delayedDestinationDir   = { set.output.classesDirs.files.first() }
                 delayedClasspath = {
                     project.files(
                         set.compileClasspath,
@@ -116,7 +116,7 @@ public class ClojureBasePlugin implements Plugin<Project> {
             from project.sourceSets.test.clojure
             delayedJvmOptions = { compileTask.jvmOptions }
             delayedClasspath  = { project.configurations.testRuntime }
-            delayedClassesDir = { project.sourceSets.main.output.classesDir }
+            delayedClassesDir = { project.sourceSets.main.output.classesDirs.files.first() }
             delayedJunitOutputDir = {
                 project.file(project.buildDir.path + "/test-results")
             }
