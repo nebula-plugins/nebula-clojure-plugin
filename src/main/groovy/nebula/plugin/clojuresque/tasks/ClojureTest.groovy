@@ -22,7 +22,7 @@ import org.gradle.api.tasks.TaskAction
 
 class ClojureTest extends ClojureSourceTask {
     @Delayed
-    def classesDir
+    def outputDir
 
     @InputFiles
     @Delayed
@@ -66,7 +66,7 @@ class ClojureTest extends ClojureSourceTask {
             ConfigureUtil.configure delegate, this.jvmOptions
             classpath = project.files(
                 this.srcDirs,
-                this.classesDir,
+                this.outputDir,
                 this.classpath
             )
             standardInput = Util.toInputStream([

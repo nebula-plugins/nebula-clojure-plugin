@@ -23,6 +23,7 @@ import org.gradle.api.Project
 import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Upload
 
 public class ClojureBasePlugin implements Plugin<Project> {
@@ -76,7 +77,7 @@ public class ClojureBasePlugin implements Plugin<Project> {
                 from set.clojure
                 delayedAotCompile       = { set.clojure.aotCompile }
                 delayedWarnOnReflection = { set.clojure.warnOnReflection }
-                delayedDestinationDir   = { set.output.classesDirs.files.first() }
+                delayedDestinationDir   = { findOutputDir(set) }
                 delayedClasspath = {
                     project.files(
                         set.compileClasspath,
@@ -116,7 +117,7 @@ public class ClojureBasePlugin implements Plugin<Project> {
             from project.sourceSets.test.clojure
             delayedJvmOptions = { compileTask.jvmOptions }
             delayedClasspath  = { project.configurations.testRuntime }
-            delayedClassesDir = { project.sourceSets.main.output.classesDirs.files.first() }
+            delayedOutputDir = { findOutputDir(project.sourceSets.main) }
             delayedJunitOutputDir = {
                 project.file(project.buildDir.path + "/test-results")
             }
@@ -151,6 +152,12 @@ public class ClojureBasePlugin implements Plugin<Project> {
                 return
             upload.convention.plugins.clojure =
                 new ClojureUploadConvention(upload)
+        }
+    }
+
+    private File findOutputDir(SourceSet set) {
+        return set.output.classesDirs.files.find {
+            it.path.contains('clojure/main') || it.path.contains('java/main')
         }
     }
 }
