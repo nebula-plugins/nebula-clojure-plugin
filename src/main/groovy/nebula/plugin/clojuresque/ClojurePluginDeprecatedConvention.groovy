@@ -26,22 +26,18 @@ class ClojurePluginDeprecatedConvention {
     }
 
     public void setAotCompile(boolean f) {
-        Util.deprecationWarning(LOGGER, "aotCompile", "clojure.aotCompile")
         project.clojure.aotCompile = f
     }
 
     public boolean getAotCompile() {
-        Util.deprecationWarning(LOGGER, "aotCompile", "clojure.aotCompile")
         return project.clojure.aotCompile
     }
 
     public void setWarnOnReflection(boolean f) {
-        Util.deprecationWarning(LOGGER, "warnOnReflection", "clojure.warnOnReflection")
         project.clojure.warnOnReflection = f
     }
 
     public boolean getWarnOnReflection() {
-        Util.deprecationWarning(LOGGER, "warnOnReflection", "clojure.warnOnReflection")
         return project.clojure.warnOnReflection
     }
 }
