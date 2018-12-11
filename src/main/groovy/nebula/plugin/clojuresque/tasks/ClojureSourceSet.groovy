@@ -13,11 +13,22 @@
 package nebula.plugin.clojuresque.tasks
 
 import kotka.gradle.utils.tasks.GenericSourceSet
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.util.DeprecationLogger
+import org.gradle.internal.Factory
+
+import javax.annotation.Nullable
 
 @GenericSourceSet(sourceName="clojure", sourcePatterns=["**/*.clj", "**/*.cljs", "**/*.cljc"])
 class ClojureSourceSet {
     def protected initSourceSet(String displayString, FileResolver fileResolver) {
-        new ClojureSourceDirectorySet(displayString, fileResolver)
+        return DeprecationLogger.whileDisabled(new Factory<SourceDirectorySet>() {
+            @Nullable
+            @Override
+            SourceDirectorySet create() {
+                new ClojureSourceDirectorySet(displayString, fileResolver)
+            }
+        })
     }
 }
