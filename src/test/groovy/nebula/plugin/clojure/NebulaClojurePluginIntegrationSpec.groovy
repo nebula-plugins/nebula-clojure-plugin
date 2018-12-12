@@ -83,7 +83,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
             
             repositories { jcenter() }
             
-            clojure.aotCompile = true
+            clojure.warnOnReflection = true
 
             dependencies {
                 implementation 'org.clojure:clojure:1.8.0'
@@ -109,6 +109,6 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
         noExceptionThrown()
 
         and:
-        new File(projectDir, "//build/classes/java/main/test/nebula/app__init.class").exists()
+        new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
     }
 }
