@@ -15,19 +15,29 @@ package nebula.plugin.clojuresque
 import nebula.plugin.clojuresque.tasks.ClojureCompile
 import nebula.plugin.clojuresque.tasks.ClojureDoc
 import nebula.plugin.clojuresque.tasks.ClojureRun
-import nebula.plugin.clojuresque.tasks.ClojureSourceSet
 import nebula.plugin.clojuresque.tasks.ClojureTest
 import nebula.plugin.clojuresque.tasks.ClojureUploadConvention
+import nebula.plugin.clojuresque.tasks.DefaultClojureSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Upload
 
-public class ClojureBasePlugin implements Plugin<Project> {
+import javax.inject.Inject
+
+class ClojureBasePlugin implements Plugin<Project> {
     static final String CLOJURE_GROUP = "clojure development"
+
+    private final ObjectFactory objectFactory
+
+    @Inject
+    ClojureBasePlugin(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory
+    }
 
     void apply(Project project) {
         project.apply plugin: JavaPlugin
@@ -55,16 +65,16 @@ public class ClojureBasePlugin implements Plugin<Project> {
 
         project.sourceSets.all { sourceSet ->
              def clojureSourceSet =
-                new ClojureSourceSet(sourceSet.name, projectInternal.fileResolver)
+                new DefaultClojureSourceSet(sourceSet.name, objectFactory)
 
             sourceSet.convention.plugins.clojure = clojureSourceSet
             sourceSet.clojure.srcDir "src/${sourceSet.name}/clojure"
             sourceSet.allSource.source(clojureSourceSet.clojure)
 
-            sourceSet.clojure.delayedAotCompile =
+     /*       sourceSet.clojure.delayedAotCompile =
                 { project.clojure.aotCompile }
             sourceSet.clojure.delayedWarnOnReflection =
-                { project.clojure.warnOnReflection }
+                { project.clojure.warnOnReflection }*/
         }
     }
 
@@ -75,8 +85,8 @@ public class ClojureBasePlugin implements Plugin<Project> {
             def compileTaskName = set.getCompileTaskName("clojure")
             def task = project.task(compileTaskName, type: ClojureCompile) {
                 from set.clojure
-                delayedAotCompile       = { set.clojure.aotCompile }
-                delayedWarnOnReflection = { set.clojure.warnOnReflection }
+                delayedAotCompile       = { project.clojure.aotCompile }
+                delayedWarnOnReflection = { project.clojure.warnOnReflection }
                 delayedDestinationDir   = { findOutputDir(set) }
                 delayedClasspath = {
                     project.files(
