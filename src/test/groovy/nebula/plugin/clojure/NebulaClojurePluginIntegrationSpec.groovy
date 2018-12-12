@@ -3,6 +3,16 @@ package nebula.plugin.clojure
 import nebula.test.IntegrationTestKitSpec
 
 class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
+
+    private final APP_CLJ = '''\
+            (ns test.nebula.app)
+            
+            (defn hello
+              [name]
+              (println "hello" name))
+            '''.stripIndent()
+
+
     def 'can compile clojure'() {
         buildFile << '''\
             plugins {
@@ -20,13 +30,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
-        new File(clojurefiles, 'app.clj').text = '''\
-            (ns test.nebula.app)
-            
-            (defn hello
-              [name]
-              (println "hello" name))
-            '''.stripIndent()
+        new File(clojurefiles, 'app.clj').text = APP_CLJ
 
         when:
         def result = runTasks('build')
@@ -57,13 +61,8 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
-        new File(clojurefiles, 'app.clj').text = '''\
-            (ns test.nebula.app)
-            
-            (defn hello
-              [name]
-              (println "hello" name))
-            '''.stripIndent()
+        new File(clojurefiles, 'app.clj').text = APP_CLJ
+
 
         when:
         def result = runTasks('build')
@@ -94,13 +93,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
-        new File(clojurefiles, 'app.clj').text = '''\
-            (ns test.nebula.app)
-            
-            (defn hello
-              [name]
-              (println "hello" name))
-            '''.stripIndent()
+        new File(clojurefiles, 'app.clj').text = APP_CLJ
 
         when:
         def result = runTasks('build')
