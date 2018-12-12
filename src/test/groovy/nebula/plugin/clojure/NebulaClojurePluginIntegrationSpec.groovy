@@ -37,4 +37,78 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
         and:
         new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
     }
+
+    def 'can compile clojure with aotCompile'() {
+        buildFile << '''\
+            plugins {
+                id 'nebula.clojure'
+            }
+            
+            repositories { jcenter() }
+            
+            clojure.aotCompile = true
+
+            dependencies {
+                implementation 'org.clojure:clojure:1.8.0'
+            }
+            '''.stripIndent()
+
+        settingsFile << 'rootProject.name="can-compile-clojure-aotCompile"'
+
+        def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
+        clojurefiles.mkdirs()
+        new File(clojurefiles, 'app.clj').text = '''\
+            (ns test.nebula.app)
+            
+            (defn hello
+              [name]
+              (println "hello" name))
+            '''.stripIndent()
+
+        when:
+        def result = runTasks('build')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        new File(projectDir, "//build/classes/java/main/test/nebula/app__init.class").exists()
+    }
+
+    def 'can compile clojure with warnOnReflection'() {
+        buildFile << '''\
+            plugins {
+                id 'nebula.clojure'
+            }
+            
+            repositories { jcenter() }
+            
+            clojure.aotCompile = true
+
+            dependencies {
+                implementation 'org.clojure:clojure:1.8.0'
+            }
+            '''.stripIndent()
+
+        settingsFile << 'rootProject.name="can-compile-clojure-warnOnReflection"'
+
+        def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
+        clojurefiles.mkdirs()
+        new File(clojurefiles, 'app.clj').text = '''\
+            (ns test.nebula.app)
+            
+            (defn hello
+              [name]
+              (println "hello" name))
+            '''.stripIndent()
+
+        when:
+        def result = runTasks('build')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        new File(projectDir, "//build/classes/java/main/test/nebula/app__init.class").exists()
+    }
 }
