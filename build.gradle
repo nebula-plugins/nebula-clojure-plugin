@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '9.1.4'
+    id 'nebula.plugin-plugin' version '9.2.3'
     id 'java-gradle-plugin'
 }
 
