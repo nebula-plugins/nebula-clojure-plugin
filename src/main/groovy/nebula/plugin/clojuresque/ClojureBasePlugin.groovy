@@ -61,8 +61,6 @@ class ClojureBasePlugin implements Plugin<Project> {
     }
 
     private void configureSourceSets(project) {
-        ProjectInternal projectInternal = (ProjectInternal)project
-
         project.sourceSets.all { sourceSet ->
              def clojureSourceSet =
                 new DefaultClojureSourceSet(sourceSet.name, objectFactory)
@@ -70,11 +68,6 @@ class ClojureBasePlugin implements Plugin<Project> {
             sourceSet.convention.plugins.clojure = clojureSourceSet
             sourceSet.clojure.srcDir "src/${sourceSet.name}/clojure"
             sourceSet.allSource.source(clojureSourceSet.clojure)
-
-     /*       sourceSet.clojure.delayedAotCompile =
-                { project.clojure.aotCompile }
-            sourceSet.clojure.delayedWarnOnReflection =
-                { project.clojure.warnOnReflection }*/
         }
     }
 
