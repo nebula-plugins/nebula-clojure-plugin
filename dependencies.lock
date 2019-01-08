@@ -59,7 +59,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -85,7 +85,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -111,7 +111,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -137,7 +137,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -209,7 +209,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -235,7 +235,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -261,7 +261,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -287,7 +287,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
