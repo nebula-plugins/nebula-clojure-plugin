@@ -30,6 +30,6 @@ class NebulaClojurePlugin implements Plugin<Project> {
         project.plugins.apply ClojureExtrasPlugin
 
         // One part of clojars plugin we want
-        project.repositories.maven { url "http://clojars.org/repo" }
+        project.repositories.maven { url "https://clojars.org/repo" }
     }
 }
