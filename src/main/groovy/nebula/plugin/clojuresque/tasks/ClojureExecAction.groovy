@@ -13,13 +13,20 @@
 
 package nebula.plugin.clojuresque.tasks
 
+import org.gradle.api.internal.file.DefaultFileCollectionFactory
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.internal.file.IdentityFileResolver
+import org.gradle.api.internal.tasks.TaskResolver
+import org.gradle.initialization.DefaultBuildCancellationToken
+import org.gradle.internal.concurrent.DefaultExecutorFactory
 import org.gradle.process.ExecResult
 import org.gradle.process.JavaExecSpec
 import org.gradle.process.internal.*
 import org.gradle.util.GradleVersion
 
 class ClojureExecAction implements JavaExecAction, JavaExecSpec {
+    private static final String GRADLE_FIVE_THREE = "5.3"
+
     @Delegate
     JavaExecAction base
 
@@ -28,9 +35,13 @@ class ClojureExecAction implements JavaExecAction, JavaExecSpec {
     }
 
     static JavaExecAction create(FileResolver fileResolver, String gradleVersion) {
+        boolean isGradleFiveThreeOrHigher = GradleVersion.version(gradleVersion) > GradleVersion.version(GRADLE_FIVE_THREE) || gradleVersion.startsWith(GRADLE_FIVE_THREE)
         boolean hasExecFactory = GradleVersion.version(gradleVersion) > GradleVersion.version("4.4.1")
         def action
-        if (hasExecFactory) {
+        if(isGradleFiveThreeOrHigher) {
+            IdentityFileResolver resolver = new IdentityFileResolver()
+            action = DefaultExecActionFactory.of(fileResolver,  new DefaultFileCollectionFactory(resolver, (TaskResolver)null), new DefaultExecutorFactory(), new DefaultBuildCancellationToken()).newJavaExecAction()
+        } else if (hasExecFactory) {
             action = new DefaultExecActionFactory(fileResolver).newJavaExecAction()
         } else {
             action = new DefaultJavaExecAction(fileResolver)
