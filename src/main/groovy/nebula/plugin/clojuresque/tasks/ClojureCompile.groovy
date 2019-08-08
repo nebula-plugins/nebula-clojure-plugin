@@ -92,7 +92,9 @@ class ClojureCompile extends ClojureSourceTask {
             "clojuresque/tasks/compile.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.clojureexec {
+        project.javaexec {
+            setMain("clojure.main")
+            args('-')
             ConfigureUtil.configure delegate, this.jvmOptions
             systemProperties "clojure.compile.path": destDir.path
             classpath = project.files(

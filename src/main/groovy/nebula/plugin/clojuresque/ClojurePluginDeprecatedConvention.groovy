@@ -18,7 +18,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class ClojurePluginDeprecatedConvention {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClojurePluginConvention)
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClojurePluginDeprecatedConvention)
     private final Project project
 
     public ClojurePluginDeprecatedConvention(Project project) {

@@ -139,7 +139,9 @@ class ClojureRepl extends DefaultTask {
             "clojuresque/tasks/repl.clj"
         ].collect { this.class.classLoader.getResourceAsStream(it) }
 
-        project.clojureexec {
+        project.javaexec {
+            setMain("clojure.main")
+            args('-')
             ConfigureUtil.configure delegate, this.getJvmOptions()
             classpath = this.getClasspath()
             standardInput = Util.toInputStream([
