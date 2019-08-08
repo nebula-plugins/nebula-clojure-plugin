@@ -147,6 +147,7 @@ class ClojureExec extends ConventionTask implements JavaExecSpec {
     }
 
     public ClojureExec setMain(String mainClassName) {
+        throw new RuntimeException("this shouldn't be called")
         clojureExecAction.setMain(mainClassName);
         return this;
     }
