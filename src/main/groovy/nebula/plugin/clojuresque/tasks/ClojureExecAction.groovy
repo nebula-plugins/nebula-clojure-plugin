@@ -54,6 +54,7 @@ class ClojureExecAction implements JavaExecAction, JavaExecSpec {
 
     @Override
     JavaExecSpec setMain(String var1) {
+        throw new RuntimeException("this shouldn't be called")
         if (var1 == '-') {
             base.setMain('clojure.main')
             List<String> args = base.getArgs()
