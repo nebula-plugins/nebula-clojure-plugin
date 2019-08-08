@@ -4,6 +4,9 @@ import nebula.test.IntegrationTestKitSpec
 
 class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
+    def setup() {
+        debug = true
+    }
     private final APP_CLJ = '''\
             (ns test.nebula.app)
             
