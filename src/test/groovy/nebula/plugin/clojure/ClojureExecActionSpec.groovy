@@ -3,7 +3,9 @@ package nebula.plugin.clojure
 import nebula.plugin.clojuresque.tasks.ClojureExecAction
 import nebula.test.ProjectSpec
 import org.gradle.api.internal.project.ProjectInternal
+import org.junit.Ignore
 
+@spock.lang.Ignore
 class ClojureExecActionSpec extends ProjectSpec {
     ClojureExecAction action
 
