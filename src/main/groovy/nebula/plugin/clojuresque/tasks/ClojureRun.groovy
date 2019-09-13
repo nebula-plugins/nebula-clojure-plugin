@@ -8,11 +8,13 @@ import org.gradle.api.tasks.options.Option;
 
 class ClojureRun extends ClojureSourceTask {
 
-    @InputFiles
+    @Classpath
     @Delayed
     def classpath
 
     @Delayed
+    @Input
+    @Optional
     def jvmOptions
 
     private String fn;

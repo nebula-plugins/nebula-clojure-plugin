@@ -16,7 +16,11 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -80,7 +84,7 @@ class ClojureRepl extends DefaultTask {
     /**
      * Classpath required to generate the documentation.
      */
-    @InputFiles
+    @Classpath
     @Delayed
     def classpath
 
@@ -101,28 +105,35 @@ class ClojureRepl extends DefaultTask {
      * This may be used to set eg. heap sizes etc.
      */
     @Delayed
+    @Input
+    @Optional
     def jvmOptions
 
     /**
      * The port for the repl server to listen on. A string or integer.
      */
+    @Internal
     def port
 
     /**
      * The fully qualified name of the repl handler.
      */
+    @Internal
     def handler
 
     /**
      * A list of fully qualified names of middlewares. <em>Note:</em>
      * unused in case a custom <code>handler</code> is set.
      */
+    @Internal
     def middleware = []
 
     /**
      * A list of namespaces which need to be reqired to initialise
      * the repl environment.
      */
+    @Input
+    @Optional
     def injections = []
 
     @TaskAction

@@ -14,16 +14,17 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 import nebula.plugin.utils.tasks.SourceDirectoryTask
+import org.gradle.api.tasks.Internal
 
-public class ClojureSourceTask extends SourceDirectoryTask {
+class ClojureSourceTask extends SourceDirectoryTask {
     /* Duplicate the functionality of ClojureSourceSet. */
 
-    public ClojureSourceTask includeNamespace(String pattern) {
+    ClojureSourceTask includeNamespace(String pattern) {
         include(Util.namespaceFile(pattern))
         return this
     }
 
-    public ClojureSourceTask excludeNamespace(String pattern) {
+    ClojureSourceTask excludeNamespace(String pattern) {
         exclude(Util.namespaceFile(pattern))
         return this
     }

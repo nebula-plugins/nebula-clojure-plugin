@@ -15,6 +15,7 @@ package nebula.plugin.clojuresque.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.GradleBuild
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -31,11 +32,13 @@ class TaskWatcher extends DefaultTask {
      * The sleeping interval between task runs. The time is measured in
      * milli seconds. Default: 5s.
      */
+    @Internal
     def pollingInterval = 5000
 
     /**
      * Get the tasks, watched by this watcher task.
      */
+    @Internal
     def getTasks() {
         watcherTask().tasks
     }
