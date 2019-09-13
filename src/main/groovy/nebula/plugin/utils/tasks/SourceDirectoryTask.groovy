@@ -59,10 +59,7 @@ class SourceDirectoryTask extends DefaultTask {
     Set getIncludes() {
         return includes
     }
-
-    @Internal
-    PatternSet filter
-
+    
 
     /**
      * Get the underlying source directories as
