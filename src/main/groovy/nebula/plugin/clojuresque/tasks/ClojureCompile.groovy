@@ -18,9 +18,11 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 
 import clojure.lang.RT
-
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -31,7 +33,7 @@ class ClojureCompile extends ClojureSourceTask {
     @Delayed
     def destinationDir
 
-    @InputFiles
+    @Classpath
     @Delayed
     def classpath
 
@@ -43,10 +45,14 @@ class ClojureCompile extends ClojureSourceTask {
     @Delayed
     def warnOnReflection = false
 
+    @Internal
     def dirMode  = null
+    @Internal
     def fileMode = null
 
+    @Input
     @Delayed
+    @Optional
     def jvmOptions = {}
 
     @TaskAction

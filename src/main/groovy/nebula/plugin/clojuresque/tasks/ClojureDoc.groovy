@@ -16,9 +16,10 @@ import nebula.plugin.clojuresque.Util
 
 import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
-
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -28,14 +29,17 @@ class ClojureDoc extends ClojureSourceTask {
     @Delayed
     def destinationDir
 
-    @InputFiles
+    @Classpath
     @Delayed
     def classpath
 
     @Delayed
+    @Input
+    @Optional
     def jvmOptions
 
     @Input
+    @Optional
     def codox = [:]
 
     @TaskAction

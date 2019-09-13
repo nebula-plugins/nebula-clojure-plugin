@@ -30,7 +30,9 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.util.PatternSet
 
 /**
  * A task based on source directories. As such it very similar to
@@ -44,9 +46,23 @@ import org.gradle.api.tasks.SkipWhenEmpty
  *
  * @author Meikel Brandmeyer &lt;mb@kotka.de&gt;
  */
-@Filterable(fieldName="filter")
 class SourceDirectoryTask extends DefaultTask {
+    @Internal
     def srcDirs = []
+
+    @Internal
+    Set getExcludes() {
+        return excludes
+    }
+
+    @Internal
+    Set getIncludes() {
+        return includes
+    }
+
+    @Internal
+    PatternSet filter
+
 
     /**
      * Get the underlying source directories as
@@ -130,6 +146,6 @@ class SourceDirectoryTask extends DefaultTask {
     @InputFiles
     @SkipWhenEmpty
     def FileTree getSource() {
-        project.files(srcDirs).asFileTree.matching(filter)
+        project.files(srcDirs).asFileTree
     }
 }
