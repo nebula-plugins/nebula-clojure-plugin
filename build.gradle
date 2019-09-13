@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '12.4.0'
+    id 'nebula.plugin-plugin' version '12.4.1'
     id 'java-gradle-plugin'
 }
 
@@ -43,13 +43,13 @@ contacts {
 }
 
 dependencies {
-    compile 'org.clojure:clojure:1.7.0'
-    compile 'de.kotka.gradle:gradle-utils:0.2.2'
-    compile 'org.clojure:tools.namespace:0.2.11'
-    compile 'us.bpsm:edn-java:0.4.3'
+    implementation 'org.clojure:clojure:1.7.0'
+    implementation 'de.kotka.gradle:gradle-utils:0.2.2'
+    implementation 'org.clojure:tools.namespace:0.2.11'
+    implementation 'us.bpsm:edn-java:0.4.3'
 
-    testCompile gradleTestKit()
-    testCompile 'com.netflix.nebula:nebula-publishing-plugin:5.+'
+    testImplementation gradleTestKit()
+    testImplementation 'com.netflix.nebula:nebula-publishing-plugin:5.+'
 }
 
 pluginBundle {
