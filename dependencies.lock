@@ -1,0 +1,170 @@
+{
+    "compileClasspath": {
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "default": {
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "integTestCompileClasspath": {
+        "com.netflix.nebula:nebula-publishing-plugin": {
+            "locked": "5.1.5",
+            "requested": "5.+"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.3.0",
+            "requested": "7.+"
+        },
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "integTestRuntimeClasspath": {
+        "com.netflix.nebula:nebula-publishing-plugin": {
+            "locked": "5.1.5",
+            "requested": "5.+"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.3.0",
+            "requested": "7.+"
+        },
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "jacocoAgent": {
+        "org.jacoco:org.jacoco.agent": {
+            "locked": "0.8.4"
+        }
+    },
+    "jacocoAnt": {
+        "org.jacoco:org.jacoco.ant": {
+            "locked": "0.8.4"
+        }
+    },
+    "runtimeClasspath": {
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "testCompileClasspath": {
+        "com.netflix.nebula:nebula-publishing-plugin": {
+            "locked": "5.1.5",
+            "requested": "5.+"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.3.0",
+            "requested": "7.+"
+        },
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    },
+    "testRuntimeClasspath": {
+        "com.netflix.nebula:nebula-publishing-plugin": {
+            "locked": "5.1.5",
+            "requested": "5.+"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.3.0",
+            "requested": "7.+"
+        },
+        "de.kotka.gradle:gradle-utils": {
+            "locked": "0.2.2",
+            "requested": "0.2.2"
+        },
+        "org.clojure:clojure": {
+            "locked": "1.7.0",
+            "requested": "1.7.0"
+        },
+        "org.clojure:tools.namespace": {
+            "locked": "0.2.11",
+            "requested": "0.2.11"
+        },
+        "us.bpsm:edn-java": {
+            "locked": "0.4.3",
+            "requested": "0.4.3"
+        }
+    }
+}
