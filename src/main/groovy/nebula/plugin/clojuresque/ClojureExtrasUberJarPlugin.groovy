@@ -24,7 +24,9 @@ public class ClojureExtrasUberJarPlugin implements Plugin<Project> {
                     'Constructs a jar with all runtime dependencies included'
                 group = "other"
                 dependsOn jar.source, project.configurations.runtime
-                baseName = jar.baseName + "-standalone"
+                String baseName = jar.archiveBaseName.getOrNull() + '-standalone'
+                archiveBaseName.convention baseName
+                archiveBaseName.set baseName
                 enabled = false
                 doFirst {
                     project.configurations.runtime.each {
