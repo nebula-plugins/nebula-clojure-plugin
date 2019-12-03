@@ -105,7 +105,7 @@ class ClojureRepl extends DefaultTask {
      * This may be used to set eg. heap sizes etc.
      */
     @Delayed
-    @Input
+    @Internal
     @Optional
     def jvmOptions
 

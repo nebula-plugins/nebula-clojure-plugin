@@ -18,22 +18,22 @@ import nebula.plugin.clojuresque.Util
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
 class ClojureTest extends ClojureSourceTask {
     @Delayed
-    @OutputFile
+    @Internal
     def outputDir
 
     @Classpath
     @Delayed
     def classpath
 
-    @Input
+    @Internal
     @Delayed
     def jvmOptions = {}
 
@@ -44,7 +44,7 @@ class ClojureTest extends ClojureSourceTask {
     @Delayed
     def junitOutputDir = null
 
-    @InputFiles
+    @Internal
     @Optional
     def tests = []
 

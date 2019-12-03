@@ -50,7 +50,7 @@ class ClojureCompile extends ClojureSourceTask {
     @Internal
     def fileMode = null
 
-    @Input
+    @Internal
     @Delayed
     @Optional
     def jvmOptions = {}

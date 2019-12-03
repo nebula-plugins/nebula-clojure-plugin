@@ -13,7 +13,7 @@ class ClojureRun extends ClojureSourceTask {
     def classpath
 
     @Delayed
-    @Input
+    @Internal
     @Optional
     def jvmOptions
 
