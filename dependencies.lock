@@ -41,7 +41,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.3.0",
+            "locked": "7.6.0",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -67,7 +67,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.3.0",
+            "locked": "7.6.0",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -89,12 +89,12 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.8.4"
+            "locked": "0.8.5"
         }
     },
     "jacocoAnt": {
         "org.jacoco:org.jacoco.ant": {
-            "locked": "0.8.4"
+            "locked": "0.8.5"
         }
     },
     "runtimeClasspath": {
@@ -121,7 +121,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.3.0",
+            "locked": "7.6.0",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
@@ -147,7 +147,7 @@
             "requested": "5.+"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.3.0",
+            "locked": "7.6.0",
             "requested": "7.+"
         },
         "de.kotka.gradle:gradle-utils": {
