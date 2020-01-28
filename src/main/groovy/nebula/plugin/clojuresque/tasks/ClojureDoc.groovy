@@ -18,7 +18,6 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
@@ -36,7 +35,6 @@ class ClojureDoc extends ClojureSourceTask {
 
     @Delayed
     @Internal
-    @Optional
     def jvmOptions
 
     @Input

@@ -17,9 +17,7 @@ import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -45,7 +43,6 @@ class ClojureTest extends ClojureSourceTask {
     def junitOutputDir = null
 
     @Internal
-    @Optional
     def tests = []
 
     @TaskAction

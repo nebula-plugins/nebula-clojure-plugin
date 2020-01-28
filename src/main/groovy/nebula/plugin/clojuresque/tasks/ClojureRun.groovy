@@ -14,7 +14,6 @@ class ClojureRun extends ClojureSourceTask {
 
     @Delayed
     @Internal
-    @Optional
     def jvmOptions
 
     private String fn;
