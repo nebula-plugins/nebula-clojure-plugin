@@ -20,9 +20,7 @@ import kotka.gradle.utils.Delayed
 import clojure.lang.RT
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -52,7 +50,6 @@ class ClojureCompile extends ClojureSourceTask {
 
     @Internal
     @Delayed
-    @Optional
     def jvmOptions = {}
 
     @TaskAction
