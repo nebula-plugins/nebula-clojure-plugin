@@ -36,7 +36,7 @@ class ClojureReplPlugin implements Plugin<Project> {
                 project.files(
                     sourceRoots,
                     project.sourceSets.collect { it.output },
-                    project.configurations.testRuntime,
+                    project.configurations.testRuntimeClasspath,
                     project.configurations.development
                 )
             }

@@ -120,12 +120,12 @@ class ClojureBasePlugin implements Plugin<Project> {
         def clojureTest = project.task("clojureTest", type: ClojureTest) {
             from project.sourceSets.test.clojure
             delayedJvmOptions = { compileTask.jvmOptions }
-            delayedClasspath  = { project.configurations.testRuntime }
+            delayedClasspath  = { project.configurations.testRuntimeClasspath }
             delayedOutputDir = { findOutputDir(project.sourceSets.main) }
             delayedJunitOutputDir = {
                 project.file(project.buildDir.path + "/test-results")
             }
-            dependsOn project.tasks.classes, project.configurations.testRuntime
+            dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."
             group = JavaBasePlugin.VERIFICATION_GROUP
             if (project.hasProperty("clojuresque.test.vars")) {

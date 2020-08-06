@@ -23,13 +23,13 @@ public class ClojureExtrasUberJarPlugin implements Plugin<Project> {
                 description =
                     'Constructs a jar with all runtime dependencies included'
                 group = "other"
-                dependsOn jar.source, project.configurations.runtime
+                dependsOn jar.source, project.configurations.runtimeClasspath
                 String baseName = jar.archiveBaseName.getOrNull() + '-standalone'
                 archiveBaseName.convention baseName
                 archiveBaseName.set baseName
                 enabled = false
                 doFirst {
-                    project.configurations.runtime.each {
+                    project.configurations.runtimeClasspath.each {
                         from project.zipTree(it)
                         exclude 'META-INF/MANIFEST.MF'
                         exclude 'META-INF/*.SF'
