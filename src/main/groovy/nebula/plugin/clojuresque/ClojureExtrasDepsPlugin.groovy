@@ -23,7 +23,7 @@ public class ClojureExtrasDepsPlugin implements Plugin<Project> {
                 'Copy runtime dependencies into the "lib" directory'
             group = "other"
             into 'lib'
-            from project.configurations.runtime
+            from project.configurations.runtimeClasspath
         }
     }
 }
