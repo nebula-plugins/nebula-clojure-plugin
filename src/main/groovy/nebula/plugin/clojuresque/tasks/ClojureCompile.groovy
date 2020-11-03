@@ -20,6 +20,7 @@ import kotka.gradle.utils.Delayed
 import clojure.lang.RT
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
@@ -31,6 +32,7 @@ class ClojureCompile extends ClojureSourceTask {
     @Delayed
     def destinationDir
 
+    @InputFiles
     @Classpath
     @Delayed
     def classpath
