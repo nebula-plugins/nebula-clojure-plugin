@@ -22,7 +22,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
                 id 'nebula.clojure'
             }
             
-            repositories { jcenter() }
+            repositories { mavenCentral() }
     
             dependencies {
                 implementation 'org.clojure:clojure:1.8.0'
@@ -51,7 +51,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
                 id 'nebula.clojure'
             }
             
-            repositories { jcenter() }
+            repositories { mavenCentral() }
             
             clojure.aotCompile = true
 
@@ -83,7 +83,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
                 id 'nebula.clojure'
             }
             
-            repositories { jcenter() }
+            repositories { mavenCentral() }
             
             clojure.warnOnReflection = true
 

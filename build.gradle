@@ -23,7 +23,7 @@ plugins {
 // Any callers need to have this repository too.
 repositories {
     maven { url 'https://clojars.org/repo' }
-    jcenter()
+    mavenCentral()
 }
 
 description 'Small wrapper around clojuresque'
