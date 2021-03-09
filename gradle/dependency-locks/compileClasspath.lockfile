@@ -1,0 +1,8 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+de.kotka.gradle:gradle-utils:0.2.2
+de.kotka.groovy:zweig:0.4.0
+org.clojure:clojure:1.7.0
+org.clojure:tools.namespace:0.2.11
+us.bpsm:edn-java:0.4.3
