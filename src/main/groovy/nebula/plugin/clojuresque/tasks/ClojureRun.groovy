@@ -6,7 +6,7 @@ import nebula.plugin.clojuresque.Util
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option;
 
-class ClojureRun extends ClojureSourceTask {
+abstract class ClojureRun extends ClojureSourceTask {
 
     @Classpath
     @Delayed
@@ -49,6 +49,9 @@ class ClojureRun extends ClojureSourceTask {
                 "(clojuresque.tasks.run/main)",
                 Util.optionsToStream(options)
             ])
+            if(launcher.isPresent()) {
+                setExecutable(launcher.get().getExecutablePath().getAsFile().getAbsolutePath())
+            }
         }
     }
 }

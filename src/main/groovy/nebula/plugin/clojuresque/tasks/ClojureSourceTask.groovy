@@ -14,11 +14,30 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 import nebula.plugin.utils.tasks.SourceDirectoryTask
-import org.gradle.api.tasks.Internal
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.Optional
+import org.gradle.jvm.toolchain.JavaLauncher
+import org.gradle.jvm.toolchain.JavaToolchainService
 
-class ClojureSourceTask extends SourceDirectoryTask {
+import javax.inject.Inject
+
+abstract class ClojureSourceTask extends SourceDirectoryTask {
+    @Nested
+    @Optional
+    abstract Property<JavaLauncher> getLauncher()
+
+    @Inject
+    ClojureSourceTask() {
+        def toolchain = project.getExtensions().getByType(JavaPluginExtension.class).toolchain
+        JavaToolchainService service = project.getExtensions().getByType(JavaToolchainService.class)
+        Provider<JavaLauncher> defaultLauncher = service.launcherFor(toolchain)
+        launcher.convention(defaultLauncher)
+    }
+
     /* Duplicate the functionality of ClojureSourceSet. */
-
     ClojureSourceTask includeNamespace(String pattern) {
         include(Util.namespaceFile(pattern))
         return this

@@ -20,7 +20,6 @@ import nebula.plugin.clojuresque.tasks.ClojureUploadConvention
 import nebula.plugin.clojuresque.tasks.DefaultClojureSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin

@@ -24,7 +24,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
-class ClojureDoc extends ClojureSourceTask {
+abstract class ClojureDoc extends ClojureSourceTask {
     @OutputDirectory
     @Delayed
     def destinationDir
@@ -91,6 +91,9 @@ class ClojureDoc extends ClojureSourceTask {
                 "(clojuresque.tasks.doc/main)",
                 Util.optionsToStream(options)
             ])
+            if(launcher.isPresent()) {
+                setExecutable(launcher.get().getExecutablePath().getAsFile().getAbsolutePath())
+            }
         }
 
         [
