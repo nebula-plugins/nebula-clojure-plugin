@@ -2,11 +2,12 @@ package nebula.plugin.clojure
 
 import nebula.test.IntegrationTestKitSpec
 
-class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
+class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
     def setup() {
         debug = true
     }
+
     private final APP_CLJ = '''\
             (ns test.nebula.app)
             
@@ -23,9 +24,9 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
             }
             
             repositories { mavenCentral() }
-    
+
             dependencies {
-                implementation 'org.clojure:clojure:1.8.0'
+                implementation 'org.clojure:clojure:1.10.3'
             }
             '''.stripIndent()
 
@@ -56,7 +57,7 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
             clojure.aotCompile = true
 
             dependencies {
-                implementation 'org.clojure:clojure:1.8.0'
+                implementation 'org.clojure:clojure:1.10.3'
             }
             '''.stripIndent()
 
@@ -88,11 +89,43 @@ class NebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
             clojure.warnOnReflection = true
 
             dependencies {
-                implementation 'org.clojure:clojure:1.8.0'
+                implementation 'org.clojure:clojure:1.10.3'
             }
             '''.stripIndent()
 
         settingsFile << 'rootProject.name="can-compile-clojure-warnOnReflection"'
+
+        def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
+        clojurefiles.mkdirs()
+        new File(clojurefiles, 'app.clj').text = APP_CLJ
+
+        when:
+        def result = runTasks('build')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
+    }
+
+    def 'can compile clojure when source/target compatibility are set'() {
+        buildFile << '''\
+            plugins {
+                id 'nebula.clojure'
+            }
+            
+            repositories { mavenCentral() }
+
+            dependencies {
+                implementation 'org.clojure:clojure:1.10.3'
+            }
+            
+            sourceCompatibility = 1.8
+            targetCompatibility = 1.8
+            '''.stripIndent()
+
+        settingsFile << 'rootProject.name="can-compile-clojure"'
 
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()

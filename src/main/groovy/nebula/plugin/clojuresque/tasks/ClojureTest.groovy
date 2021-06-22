@@ -23,7 +23,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
-class ClojureTest extends ClojureSourceTask {
+abstract class ClojureTest extends ClojureSourceTask {
     @Delayed
     @Internal
     def outputDir
@@ -84,6 +84,9 @@ class ClojureTest extends ClojureSourceTask {
                 "(clojuresque.tasks.test/main)",
                 Util.optionsToStream(options)
             ])
+            if(launcher.isPresent()) {
+                setExecutable(launcher.get().getExecutablePath().getAsFile().getAbsolutePath())
+            }
         }
     }
 }
