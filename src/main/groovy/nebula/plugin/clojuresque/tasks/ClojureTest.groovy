@@ -59,7 +59,7 @@ abstract class ClojureTest extends ClojureSourceTask {
 
         def options = [
             sourceFiles:    source.files*.path,
-            tests:          tests,
+            tests:          tests.join(","),
             junit:          junit,
             junitOutputDir: junitDir?.path,
         ]

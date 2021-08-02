@@ -132,6 +132,11 @@ class ClojureBasePlugin implements Plugin<Project> {
             }
         }
         project.tasks.test.dependsOn clojureTest
+        if (project.gradle.startParameter.taskNames.contains('--tests')) {
+            project.tasks.clojureTest.configure {
+                enabled = false
+            }
+        }
     }
 
     private void configureRun(project) {
