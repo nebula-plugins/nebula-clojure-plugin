@@ -19,7 +19,11 @@
 ; For now: do stuff manually for explicitly named tests.
 (defn test-vars
   [{:keys [tests]}]
-  (let [tests (group-by (comp symbol namespace) (map read-string tests))]
+  (let [tests (->>
+              (clojure.string/split tests #",")           ; split comma delimited list
+              (map read-string)                           ; read each value as a symbol
+              (filter namespace)                          ; drop java class names
+              (group-by (comp symbol namespace)))]        ; group by namespace
     (apply require (keys tests))
     (binding [t/*report-counters* (ref t/*initial-report-counters*)]
       (doseq [[nspace test-vars] tests]
