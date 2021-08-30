@@ -155,11 +155,9 @@ class ClojureBasePlugin implements Plugin<Project> {
     }
 
     private void configureClojarsUpload(project) {
-        project.tasks.whenTaskAdded { upload ->
-            if (!(upload instanceof Upload))
-                return
+        project.tasks.withType(Upload).configureEach { Upload upload ->
             upload.convention.plugins.clojure =
-                new ClojureUploadConvention(upload)
+                    new ClojureUploadConvention(upload)
         }
     }
 
