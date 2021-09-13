@@ -99,7 +99,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
         project.javaexec {
-            setMain("clojure.main")
+            setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions
             systemProperties "clojure.compile.path": destDir.path

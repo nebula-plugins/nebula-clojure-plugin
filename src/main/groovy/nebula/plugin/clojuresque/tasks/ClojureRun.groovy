@@ -37,7 +37,7 @@ abstract class ClojureRun extends ClojureSourceTask {
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
         project.javaexec {
-            setMain("clojure.main")
+            setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions
             classpath = project.files(
