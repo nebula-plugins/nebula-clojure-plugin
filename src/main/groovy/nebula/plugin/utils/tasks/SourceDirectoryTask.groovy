@@ -29,6 +29,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -59,7 +60,7 @@ class SourceDirectoryTask extends DefaultTask {
     Set getIncludes() {
         return includes
     }
-    
+
 
     /**
      * Get the underlying source directories as
@@ -142,6 +143,7 @@ class SourceDirectoryTask extends DefaultTask {
      */
     @InputFiles
     @SkipWhenEmpty
+    @IgnoreEmptyDirectories
     def FileTree getSource() {
         project.files(srcDirs).asFileTree
     }
