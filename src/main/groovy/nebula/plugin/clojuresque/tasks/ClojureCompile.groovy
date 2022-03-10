@@ -63,7 +63,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
         }
         destDir.mkdirs()
 
-        def final require = RT.var("clojure.core", "require")
+        def final require = RT.var("clojure.core", "serialized-require")
         def final symbol  = RT.var("clojure.core", "symbol")
 
         require.invoke(symbol.invoke("clojuresque.tasks.clojure-compile-util"))
