@@ -13,6 +13,14 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec
             '''.stripIndent()
 
 
+    def setup() {
+        System.setProperty("ignoreDeprecations", "true")
+    }
+
+    def cleanup() {
+        System.clearProperty("ignoreDeprecations")
+    }
+
     def 'can compile clojure'() {
         debug = true
         buildFile << '''\

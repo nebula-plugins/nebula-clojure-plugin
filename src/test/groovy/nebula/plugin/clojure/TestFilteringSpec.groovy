@@ -73,6 +73,11 @@ class TestFilteringSpec extends IntegrationTestKitSpec {
 
         new File(testClojurefiles, 'test1.clj').text = TEST1_SUCCESSFUL_CLJ
         new File(testClojurefiles, 'test2.clj').text = TEST2_SUCCESSFUL_CLJ
+        System.setProperty("ignoreDeprecations", "true")
+    }
+
+    def cleanup() {
+        System.clearProperty("ignoreDeprecations")
     }
 
     @Unroll

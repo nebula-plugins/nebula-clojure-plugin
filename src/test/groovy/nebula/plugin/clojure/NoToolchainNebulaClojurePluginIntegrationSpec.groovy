@@ -5,7 +5,11 @@ import nebula.test.IntegrationTestKitSpec
 class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
 
     def setup() {
-        debug = true
+        System.setProperty("ignoreDeprecations", "true")
+    }
+
+    def cleanup() {
+        System.clearProperty("ignoreDeprecations")
     }
 
     private final APP_CLJ = '''\
