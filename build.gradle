@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '16.3.0'
+    id 'nebula.plugin-plugin' version '17.0.0'
     id 'java-gradle-plugin'
 }
 
@@ -48,12 +48,16 @@ dependencies {
 }
 
 pluginBundle {
+    tags = ['nebula', 'clojure']
+}
+
+gradlePlugin {
     plugins {
         dependencyLock {
             id = 'nebula.clojure'
             displayName = 'Nebula Clojure'
             description = project.description
-            tags = ['nebula', 'clojure']
+            implementationClass = 'nebula.plugin.clojure.NebulaClojurePlugin'
         }
     }
 }
