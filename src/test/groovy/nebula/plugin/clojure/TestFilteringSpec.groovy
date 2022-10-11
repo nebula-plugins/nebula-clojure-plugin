@@ -56,7 +56,7 @@ class TestFilteringSpec extends IntegrationTestKitSpec {
     def setup() {
         buildFile << '''\
             plugins {
-                id 'nebula.clojure'
+                id 'com.netflix.nebula.clojure'
             }
             repositories { mavenCentral() }
             dependencies {

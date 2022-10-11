@@ -20,7 +20,7 @@ import nebula.test.ProjectSpec
 
 class NebulaClojurePluginSpec extends ProjectSpec {
     void getPluginName() {
-        'nebula-clojure'
+        'com.netflix.nebula.clojure'
     }
 
     def 'plays nice with others'() {

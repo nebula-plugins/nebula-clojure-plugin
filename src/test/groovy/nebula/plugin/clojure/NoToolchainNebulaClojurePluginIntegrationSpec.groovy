@@ -24,7 +24,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSp
     def 'can compile clojure'() {
         buildFile << '''\
             plugins {
-                id 'nebula.clojure'
+                id 'com.netflix.nebula.clojure'
             }
             
             repositories { mavenCentral() }
@@ -53,7 +53,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSp
     def 'can compile clojure with aotCompile'() {
         buildFile << '''\
             plugins {
-                id 'nebula.clojure'
+                id 'com.netflix.nebula.clojure'
             }
             
             repositories { mavenCentral() }
@@ -85,7 +85,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSp
     def 'can compile clojure with warnOnReflection'() {
         buildFile << '''\
             plugins {
-                id 'nebula.clojure'
+                id 'com.netflix.nebula.clojure'
             }
             
             repositories { mavenCentral() }
@@ -116,7 +116,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSp
     def 'can compile clojure when source/target compatibility are set'() {
         buildFile << '''\
             plugins {
-                id 'nebula.clojure'
+                id 'com.netflix.nebula.clojure'
             }
             
             repositories { mavenCentral() }
