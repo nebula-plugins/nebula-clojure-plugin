@@ -4,8 +4,10 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.tasks.*
-import org.gradle.api.tasks.options.Option;
+import org.gradle.api.tasks.options.Option
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault
 abstract class ClojureRun extends ClojureSourceTask {
 
     @Classpath

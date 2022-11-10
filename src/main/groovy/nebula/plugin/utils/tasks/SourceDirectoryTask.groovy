@@ -29,9 +29,12 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.util.PatternSet
 
@@ -47,6 +50,7 @@ import org.gradle.api.tasks.util.PatternSet
  *
  * @author Meikel Brandmeyer &lt;mb@kotka.de&gt;
  */
+@CacheableTask
 class SourceDirectoryTask extends DefaultTask {
     @Internal
     def srcDirs = []
@@ -144,6 +148,7 @@ class SourceDirectoryTask extends DefaultTask {
     @InputFiles
     @SkipWhenEmpty
     @IgnoreEmptyDirectories
+    @PathSensitive(PathSensitivity.NONE)
     def FileTree getSource() {
         project.files(srcDirs).asFileTree
     }

@@ -17,6 +17,7 @@ import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
 /**
  * Execute a set of tasks in a regular interval. This can be useful when
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.TaskAction
  *
  * @author Meikel Brandmeyer &lt;mb@kotka.de&gt;
  */
+@DisableCachingByDefault
 class TaskWatcher extends DefaultTask {
     /**
      * The sleeping interval between task runs. The time is measured in

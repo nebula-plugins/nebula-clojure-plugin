@@ -16,6 +16,7 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -79,6 +80,7 @@ import org.gradle.api.tasks.TaskAction
  *     and restarted afresh to allow again parallel builds.</li>
  * </ul>
  */
+@CacheableTask
 class ClojureRepl extends DefaultTask {
     /**
      * Classpath required to generate the documentation.

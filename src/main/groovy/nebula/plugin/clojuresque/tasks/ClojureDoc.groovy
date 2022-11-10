@@ -16,6 +16,7 @@ import nebula.plugin.clojuresque.Util
 
 import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -24,6 +25,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 
+@CacheableTask
 abstract class ClojureDoc extends ClojureSourceTask {
     @OutputDirectory
     @Delayed
