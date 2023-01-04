@@ -18,6 +18,7 @@ import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 
 import clojure.lang.RT
+import org.gradle.api.file.FileType
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -26,7 +27,10 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs
+import org.gradle.internal.execution.history.changes.InputChangesInternal
+import org.gradle.work.ChangeType
+import org.gradle.work.FileChange
+import org.gradle.work.InputChanges
 
 
 @CacheableTask
@@ -58,7 +62,8 @@ abstract class ClojureCompile extends ClojureSourceTask {
     def jvmOptions = {}
 
     @TaskAction
-    void compile(IncrementalTaskInputs inputs) {
+    void compile(InputChanges inputChanges) {
+        InputChangesInternal inputChangesInternal = (InputChangesInternal) inputChanges
         def destDir = getDestinationDir()
         if (destDir == null) {
             throw new StopExecutionException("destinationDir not set!")
@@ -78,13 +83,13 @@ abstract class ClojureCompile extends ClojureSourceTask {
         def dependencyGraph = fileDependencies.invoke(source.files)
 
         def outOfDateInputs = [] as Set
-        inputs.outOfDate {
-            if (it.file.path.endsWith(".clj"))
-                outOfDateInputs << it.file
-        }
-        inputs.removed {
-            if (it.file.path.endsWith(".clj"))
-                deleteDerivedFiles(it.file)
+        inputChangesInternal.allFileChanges.each { FileChange change ->
+            if (change.fileType == FileType.DIRECTORY) return
+            if (change.changeType == ChangeType.REMOVED && change.file.name.endsWith(".clj")) {
+                deleteDerivedFiles(change.file)
+            } else if(change.changeType in [ChangeType.ADDED, ChangeType.MODIFIED] && change.file.name.endsWith(".clj")) {
+                outOfDateInputs << change.file
+            }
         }
 
         def toCompile = findDependentFiles(outOfDateInputs, dependencyGraph)
