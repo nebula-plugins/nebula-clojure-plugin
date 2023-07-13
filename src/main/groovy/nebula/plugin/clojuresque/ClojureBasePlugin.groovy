@@ -122,7 +122,7 @@ class ClojureBasePlugin implements Plugin<Project> {
             delayedClasspath  = { project.configurations.testRuntimeClasspath }
             delayedOutputDir = { findOutputDir(project.sourceSets.main) }
             delayedJunitOutputDir = {
-                project.file(project.buildDir.path + "/test-results")
+                project.file(project.layout.buildDirectory.getAsFile().get().path + "/test-results")
             }
             dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."

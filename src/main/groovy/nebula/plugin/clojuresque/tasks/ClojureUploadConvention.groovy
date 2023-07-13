@@ -31,7 +31,7 @@ class ClojureUploadConvention {
         LOGGER.warn("(provided by new clojars plugin)")
 
         upload.doLast {
-            String pomName = project.buildDir.path + "/" +
+            String pomName = project.layout.buildDirectory.getAsFile().get().path + "/" +
                 project.mavenPomDir.path + "/" +
                 "pom-" + upload.configuration.name + ".xml"
 
