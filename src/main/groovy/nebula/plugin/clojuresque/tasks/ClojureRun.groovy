@@ -5,7 +5,10 @@ import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
-import org.gradle.work.DisableCachingByDefault;
+import org.gradle.process.ExecOperations
+import org.gradle.work.DisableCachingByDefault
+
+import javax.inject.Inject;
 
 @DisableCachingByDefault
 abstract class ClojureRun extends ClojureSourceTask {
@@ -25,6 +28,13 @@ abstract class ClojureRun extends ClojureSourceTask {
         this.fn = fn;
     }
 
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureRun(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
+
     // Example usage: ./gradlew clojureRun --fn='my-ns/my-fn arg1 arg2'
     @TaskAction
     void run() {
@@ -38,7 +48,7 @@ abstract class ClojureRun extends ClojureSourceTask {
             "clojuresque/tasks/run.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions

@@ -23,6 +23,9 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 @CacheableTask
 abstract class ClojureTest extends ClojureSourceTask {
@@ -49,6 +52,13 @@ abstract class ClojureTest extends ClojureSourceTask {
     @Internal
     def tests = []
 
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureTest(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
+
     @TaskAction
     void runTests() {
         def junitDir = getJunitOutputDir()
@@ -72,7 +82,7 @@ abstract class ClojureTest extends ClojureSourceTask {
             "clojuresque/tasks/test.clj"
         ].collect { owner.class.classLoader.getResourceAsStream(it) }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions

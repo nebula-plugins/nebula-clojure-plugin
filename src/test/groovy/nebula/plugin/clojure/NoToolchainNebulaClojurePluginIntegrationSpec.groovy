@@ -1,8 +1,6 @@
 package nebula.plugin.clojure
 
-import nebula.test.IntegrationTestKitSpec
-
-class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
+class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     def setup() {
         System.setProperty("ignoreDeprecations", "true")

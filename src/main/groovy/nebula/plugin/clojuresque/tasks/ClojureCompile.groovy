@@ -28,9 +28,12 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.execution.history.changes.InputChangesInternal
+import org.gradle.process.ExecOperations
 import org.gradle.work.ChangeType
 import org.gradle.work.FileChange
 import org.gradle.work.InputChanges
+
+import javax.inject.Inject
 
 
 @CacheableTask
@@ -60,6 +63,13 @@ abstract class ClojureCompile extends ClojureSourceTask {
     @Internal
     @Delayed
     def jvmOptions = {}
+
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureCompile(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
 
     @TaskAction
     void compile(InputChanges inputChanges) {
@@ -105,7 +115,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
             "clojuresque/tasks/compile.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions

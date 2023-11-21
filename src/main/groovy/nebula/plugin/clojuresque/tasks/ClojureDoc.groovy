@@ -24,6 +24,9 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 @CacheableTask
 abstract class ClojureDoc extends ClojureSourceTask {
@@ -42,6 +45,13 @@ abstract class ClojureDoc extends ClojureSourceTask {
     @Input
     @Optional
     def codox = [:]
+
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureDoc(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
 
     @TaskAction
     void clojuredoc() {
@@ -80,7 +90,7 @@ abstract class ClojureDoc extends ClojureSourceTask {
             "clojuresque/tasks/doc.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions

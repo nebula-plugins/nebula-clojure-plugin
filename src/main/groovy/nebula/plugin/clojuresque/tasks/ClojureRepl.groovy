@@ -22,6 +22,9 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 /**
  * Starts a nrepl server for the project.
@@ -136,6 +139,14 @@ class ClojureRepl extends DefaultTask {
     @Optional
     def injections = []
 
+
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureRepl(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
+
     @TaskAction
     void startRepl() {
         def options = [
@@ -150,7 +161,7 @@ class ClojureRepl extends DefaultTask {
             "clojuresque/tasks/repl.clj"
         ].collect { this.class.classLoader.getResourceAsStream(it) }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.getJvmOptions()
