@@ -37,9 +37,6 @@ contacts {
 
 dependencies {
     implementation 'org.clojure:clojure:1.10.3'
-    implementation ('de.kotka.gradle:gradle-utils:0.2.2') {
-        exclude group: 'org.codehaus.groovy'
-    }
     implementation 'org.clojure:tools.namespace:1.1.0'
     implementation 'us.bpsm:edn-java:0.4.3'
 

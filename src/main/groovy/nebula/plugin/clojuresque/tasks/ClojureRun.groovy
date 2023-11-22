@@ -1,7 +1,5 @@
 package nebula.plugin.clojuresque.tasks
 
-import kotka.gradle.utils.ConfigureUtil
-import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory

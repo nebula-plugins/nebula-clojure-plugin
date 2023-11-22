@@ -14,9 +14,6 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 
-import kotka.gradle.utils.ConfigureUtil
-import kotka.gradle.utils.Delayed
-
 import clojure.lang.RT
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.ConfigurableFileCollection

@@ -17,7 +17,6 @@ package nebula.plugin.clojure
 
 import nebula.plugin.clojuresque.ClojureBasePlugin
 import nebula.plugin.clojuresque.ClojureExtrasPlugin
-import nebula.plugin.clojuresque.ClojureReplPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -26,7 +25,6 @@ class NebulaClojurePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.plugins.apply ClojureBasePlugin
-        project.plugins.apply ClojureReplPlugin
         project.plugins.apply ClojureExtrasPlugin
 
         // One part of clojars plugin we want
