@@ -12,6 +12,7 @@
 
 package nebula.plugin.clojuresque.tasks
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import nebula.plugin.clojuresque.Util
 
 import kotka.gradle.utils.ConfigureUtil
@@ -22,6 +23,7 @@ import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileType
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -51,12 +53,10 @@ abstract class ClojureCompile extends ClojureSourceTask {
     def classpath
 
     @Input
-    @Delayed
-    def aotCompile = false
+    abstract Property<Boolean> getAotCompile()
 
     @Input
-    @Delayed
-    def warnOnReflection = false
+    abstract Property<Boolean> getWarnOnReflection()
 
     @Internal
     def dirMode  = null
@@ -81,6 +81,8 @@ abstract class ClojureCompile extends ClojureSourceTask {
         this.fileSystemOperations = fileSystemOperations
         this.archiveOperations = archiveOperations
         this.objects = objects
+        this.aotCompile.convention(false)
+        this.warnOnReflection.convention(false)
     }
 
     @TaskAction
@@ -117,8 +119,8 @@ abstract class ClojureCompile extends ClojureSourceTask {
         def toCompile = findDependentFiles(outOfDateInputs, dependencyGraph)
 
         def options = [
-            compileMode:      (getAotCompile()) ? "compile" : "require",
-            warnOnReflection: (getWarnOnReflection()),
+            compileMode:      (aotCompile.get()) ? "compile" : "require",
+            warnOnReflection: (warnOnReflection.get()),
             sourceFiles:      toCompile.collect { it.path }
         ]
 
@@ -127,11 +129,6 @@ abstract class ClojureCompile extends ClojureSourceTask {
             "clojuresque/tasks/compile.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        def clojureClasspath = objects.fileCollection().from(
-                this.srcDirs,
-                destDir,
-                this.classpath
-        )
         def objectFactory = objects
         execOperations.javaexec {
             setMainClass("clojure.main")
@@ -153,7 +150,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
             }
         }
 
-        if (!getAotCompile()) {
+        if (aotCompile.isPresent() && !aotCompile.get()) {
             fileSystemOperations.copy {
                 dirMode  = this.dirMode
                 fileMode = this.fileMode

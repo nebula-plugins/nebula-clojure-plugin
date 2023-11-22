@@ -24,6 +24,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.Upload
 
 import javax.inject.Inject
@@ -45,14 +46,14 @@ class ClojureBasePlugin implements Plugin<Project> {
         project.convention.plugins.clojureDeprecated =
             new ClojurePluginDeprecatedConvention(project)
 
-        project.extensions.create("clojure", ClojurePluginExtension)
+        ClojurePluginExtension extension = project.extensions.create("clojure", ClojurePluginExtension, project)
 
         def repos = project.repositories
         repos.convention.plugins.clojure =
             new ClojureRepositoryConvention(repos)
 
         configureSourceSets(project)
-        configureCompilation(project)
+        configureCompilation(project, extension)
         configureDocs(project)
         configureTests(project)
         configureRun(project)
@@ -71,20 +72,21 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureCompilation(project) {
-        project.sourceSets.all { set ->
+    private void configureCompilation(Project project, ClojurePluginExtension extension) {
+        project.sourceSets.all { SourceSet set ->
             if (set.equals(project.sourceSets.test))
                 return
             def compileTaskName = set.getCompileTaskName("clojure")
-            def task = project.task(compileTaskName, type: ClojureCompile) {
+            TaskProvider<ClojureCompile> task = project.tasks.register(compileTaskName, ClojureCompile)
+            task.configure {
                 from set.clojure
-                delayedAotCompile       = { project.clojure.aotCompile }
-                delayedWarnOnReflection = { project.clojure.warnOnReflection }
+                aotCompile.set(extension.aotCompile)
+                warnOnReflection.set(extension.warnOnReflection)
                 delayedDestinationDir   = { findOutputDir(set) }
                 delayedClasspath = {
-                    project.files(
-                        set.compileClasspath,
-                        project.configurations.development
+                    objectFactory.fileCollection().from(
+                            set.compileClasspath,
+                            project.configurations.development
                     )
                 }
                 description = "Compile the ${set.name} Clojure source."
