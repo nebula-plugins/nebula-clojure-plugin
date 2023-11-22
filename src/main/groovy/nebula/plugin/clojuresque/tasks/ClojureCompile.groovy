@@ -12,7 +12,6 @@
 
 package nebula.plugin.clojuresque.tasks
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import nebula.plugin.clojuresque.Util
 
 import kotka.gradle.utils.ConfigureUtil
@@ -20,6 +19,7 @@ import kotka.gradle.utils.Delayed
 
 import clojure.lang.RT
 import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileType
 import org.gradle.api.model.ObjectFactory
@@ -44,13 +44,11 @@ import javax.inject.Inject
 @CacheableTask
 abstract class ClojureCompile extends ClojureSourceTask {
     @OutputDirectory
-    @Delayed
-    def destinationDir
+    abstract Property<File> getDestinationDir()
 
     @InputFiles
     @Classpath
-    @Delayed
-    def classpath
+    abstract ConfigurableFileCollection getClasspath()
 
     @Input
     abstract Property<Boolean> getAotCompile()
@@ -88,10 +86,10 @@ abstract class ClojureCompile extends ClojureSourceTask {
     @TaskAction
     void compile(InputChanges inputChanges) {
         InputChangesInternal inputChangesInternal = (InputChangesInternal) inputChanges
-        def destDir = getDestinationDir()
-        if (destDir == null) {
+        if (!destinationDir.present) {
             throw new StopExecutionException("destinationDir not set!")
         }
+        def destDir = destinationDir.get()
         destDir.mkdirs()
 
         def final require = RT.var("clojure.core", "serialized-require")

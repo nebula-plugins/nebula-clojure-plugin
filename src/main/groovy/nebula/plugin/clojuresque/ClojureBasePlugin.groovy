@@ -82,13 +82,13 @@ class ClojureBasePlugin implements Plugin<Project> {
                 from set.clojure
                 aotCompile.set(extension.aotCompile)
                 warnOnReflection.set(extension.warnOnReflection)
-                delayedDestinationDir   = { findOutputDir(set) }
-                delayedClasspath = {
-                    objectFactory.fileCollection().from(
-                            set.compileClasspath,
-                            project.configurations.development
-                    )
-                }
+                classpath.from(
+                        set.compileClasspath,
+                        project.configurations.findByName('development')?.incoming?.files
+                )
+                destinationDir.set(
+                        findOutputDir(set)
+                )
                 description = "Compile the ${set.name} Clojure source."
             }
             project.tasks[set.classesTaskName].dependsOn task

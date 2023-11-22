@@ -23,7 +23,6 @@
 
 package nebula.plugin.utils.tasks
 
-import kotka.gradle.utils.Filterable
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
@@ -37,9 +36,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.api.tasks.util.PatternSet
 
-import javax.inject.Inject
 
 /**
  * A task based on source directories. As such it very similar to
@@ -68,7 +65,8 @@ class SourceDirectoryTask extends DefaultTask {
         return includes
     }
 
-    private final ObjectFactory objectFactory
+    @Internal
+    final ObjectFactory objectFactory
 
     SourceDirectoryTask() {
         this.objectFactory = project.objects
