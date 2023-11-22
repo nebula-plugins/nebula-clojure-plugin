@@ -23,12 +23,12 @@
 
 package nebula.plugin.utils.tasks
 
-import kotka.gradle.utils.Filterable
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.InputFiles
@@ -36,7 +36,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
-import org.gradle.api.tasks.util.PatternSet
+
 
 /**
  * A task based on source directories. As such it very similar to
@@ -65,6 +65,12 @@ class SourceDirectoryTask extends DefaultTask {
         return includes
     }
 
+    @Internal
+    final ObjectFactory objectFactory
+
+    SourceDirectoryTask() {
+        this.objectFactory = project.objects
+    }
 
     /**
      * Get the underlying source directories as
@@ -73,7 +79,7 @@ class SourceDirectoryTask extends DefaultTask {
      * @return  The source directories as <code>FileCollection</code>
      */
     def FileCollection getSrcDirs() {
-        project.files(
+        objectFactory.fileCollection().from(
                 srcDirs.collect {
                     (it instanceof SourceDirectorySet) ?
                             it.srcDirs :
@@ -150,6 +156,6 @@ class SourceDirectoryTask extends DefaultTask {
     @IgnoreEmptyDirectories
     @PathSensitive(PathSensitivity.NONE)
     def FileTree getSource() {
-        project.files(srcDirs).asFileTree
+        objectFactory.fileCollection().from(srcDirs).asFileTree
     }
 }

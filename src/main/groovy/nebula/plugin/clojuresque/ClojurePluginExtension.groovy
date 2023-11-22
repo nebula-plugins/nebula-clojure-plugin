@@ -12,7 +12,16 @@
 
 package nebula.plugin.clojuresque
 
-class ClojurePluginExtension {
-    def boolean warnOnReflection = false
-    def boolean aotCompile       = false
+import org.gradle.api.Project
+import org.gradle.api.provider.Property
+
+abstract class ClojurePluginExtension {
+    private final Project project
+
+    ClojurePluginExtension(Project project) {
+        this.project = project
+    }
+    Property<Boolean> warnOnReflection = project.objects.property(Boolean).convention(false)
+
+    Property<Boolean> aotCompile = project.objects.property(Boolean).convention(false)
 }

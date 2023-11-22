@@ -18,10 +18,9 @@
 
 package nebula.plugin.clojure
 
-import nebula.test.IntegrationTestKitSpec
 import spock.lang.Unroll
 
-class TestFilteringSpec extends IntegrationTestKitSpec {
+class TestFilteringSpec extends BaseIntegrationTestKitSpec {
     private final APP_CLJ = '''\
             (ns test.nebula.app)
             

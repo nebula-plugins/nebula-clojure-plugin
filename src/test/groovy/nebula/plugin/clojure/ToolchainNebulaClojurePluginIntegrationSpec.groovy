@@ -1,8 +1,7 @@
 package nebula.plugin.clojure
 
-import nebula.test.IntegrationTestKitSpec
 
-class ToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
+class ToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     private final APP_CLJ = '''\
             (ns test.nebula.app)
@@ -22,7 +21,6 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec
     }
 
     def 'can compile clojure'() {
-        debug = true
         buildFile << '''\
             plugins {
                 id 'com.netflix.nebula.clojure'
@@ -49,6 +47,7 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec
 
         when:
         def result = runTasks('build', '-i')
+       // def result = runTasksAndFail('build', '-i')
 
         then:
         noExceptionThrown()

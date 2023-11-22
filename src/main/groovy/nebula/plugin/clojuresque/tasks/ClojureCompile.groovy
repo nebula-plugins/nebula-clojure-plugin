@@ -14,11 +14,13 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 
-import kotka.gradle.utils.ConfigureUtil
-import kotka.gradle.utils.Delayed
-
 import clojure.lang.RT
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileType
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -28,46 +30,60 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.execution.history.changes.InputChangesInternal
+import org.gradle.process.ExecOperations
 import org.gradle.work.ChangeType
 import org.gradle.work.FileChange
 import org.gradle.work.InputChanges
+
+import javax.inject.Inject
 
 
 @CacheableTask
 abstract class ClojureCompile extends ClojureSourceTask {
     @OutputDirectory
-    @Delayed
-    def destinationDir
+    abstract Property<File> getDestinationDir()
 
     @InputFiles
     @Classpath
-    @Delayed
-    def classpath
+    abstract ConfigurableFileCollection getClasspath()
 
     @Input
-    @Delayed
-    def aotCompile = false
+    abstract Property<Boolean> getAotCompile()
 
     @Input
-    @Delayed
-    def warnOnReflection = false
+    abstract Property<Boolean> getWarnOnReflection()
 
     @Internal
     def dirMode  = null
     @Internal
     def fileMode = null
 
-    @Internal
-    @Delayed
-    def jvmOptions = {}
+
+    private final ExecOperations execOperations
+
+    private final FileSystemOperations fileSystemOperations
+
+    private final ArchiveOperations archiveOperations
+
+    private final ObjectFactory objects
+
+    @Inject
+    ClojureCompile(ExecOperations execOperations, FileSystemOperations fileSystemOperations, ArchiveOperations archiveOperations, ObjectFactory objects) {
+        this.execOperations = execOperations
+        this.fileSystemOperations = fileSystemOperations
+        this.archiveOperations = archiveOperations
+        this.objects = objects
+        this.aotCompile.convention(false)
+        this.warnOnReflection.convention(false)
+    }
 
     @TaskAction
     void compile(InputChanges inputChanges) {
         InputChangesInternal inputChangesInternal = (InputChangesInternal) inputChanges
-        def destDir = getDestinationDir()
-        if (destDir == null) {
+        if (!destinationDir.present) {
             throw new StopExecutionException("destinationDir not set!")
         }
+        def destDir = destinationDir.get()
         destDir.mkdirs()
 
         def final require = RT.var("clojure.core", "serialized-require")
@@ -86,7 +102,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
         inputChangesInternal.allFileChanges.each { FileChange change ->
             if (change.fileType == FileType.DIRECTORY) return
             if (change.changeType == ChangeType.REMOVED && change.file.name.endsWith(".clj")) {
-                deleteDerivedFiles(change.file)
+                deleteDerivedFiles(objects, change.file)
             } else if(change.changeType in [ChangeType.ADDED, ChangeType.MODIFIED] && change.file.name.endsWith(".clj")) {
                 outOfDateInputs << change.file
             }
@@ -95,8 +111,8 @@ abstract class ClojureCompile extends ClojureSourceTask {
         def toCompile = findDependentFiles(outOfDateInputs, dependencyGraph)
 
         def options = [
-            compileMode:      (getAotCompile()) ? "compile" : "require",
-            warnOnReflection: (getWarnOnReflection()),
+            compileMode:      (aotCompile.get()) ? "compile" : "require",
+            warnOnReflection: (warnOnReflection.get()),
             sourceFiles:      toCompile.collect { it.path }
         ]
 
@@ -105,15 +121,15 @@ abstract class ClojureCompile extends ClojureSourceTask {
             "clojuresque/tasks/compile.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.javaexec {
+        def objectFactory = objects
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            ConfigureUtil.configure delegate, this.jvmOptions
             systemProperties "clojure.compile.path": destDir.path
-            classpath = project.files(
-                this.srcDirs,
-                destDir,
-                this.classpath
+            classpath = objectFactory.fileCollection().from(
+                    this.srcDirs,
+                    destDir,
+                    this.classpath
             )
             standardInput = Util.toInputStream([
                 runtime,
@@ -125,8 +141,8 @@ abstract class ClojureCompile extends ClojureSourceTask {
             }
         }
 
-        if (!getAotCompile()) {
-            project.copy {
+        if (aotCompile.isPresent() && !aotCompile.get()) {
+            fileSystemOperations.copy {
                 dirMode  = this.dirMode
                 fileMode = this.fileMode
 
@@ -150,7 +166,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
         toCompile
     }
 
-    def deleteDerivedFiles(parent) {
+    def deleteDerivedFiles(ObjectFactory objects, parent) {
         def relativeParent = getSrcDirs().findResult {
             Util.relativizePath(it, parent)
         }
@@ -159,7 +175,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
 
         def pattern = relativeParent.replaceAll("\\.clj\$", "") + "*"
 
-        project.fileTree(getDestinationDir()).include(pattern).files.each {
+        objects.fileTree(getDestinationDir()).include(pattern).files.each {
             it.delete()
         }
     }

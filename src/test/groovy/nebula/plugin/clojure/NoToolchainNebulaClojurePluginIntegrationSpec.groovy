@@ -1,8 +1,6 @@
 package nebula.plugin.clojure
 
-import nebula.test.IntegrationTestKitSpec
-
-class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSpec {
+class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     def setup() {
         System.setProperty("ignoreDeprecations", "true")
@@ -39,7 +37,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends IntegrationTestKitSp
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
         new File(clojurefiles, 'app.clj').text = APP_CLJ
-debug = true
+
         when:
         def result = runTasks('build','-s')
 

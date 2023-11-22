@@ -24,6 +24,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.Upload
 
 import javax.inject.Inject
@@ -45,14 +46,14 @@ class ClojureBasePlugin implements Plugin<Project> {
         project.convention.plugins.clojureDeprecated =
             new ClojurePluginDeprecatedConvention(project)
 
-        project.extensions.create("clojure", ClojurePluginExtension)
+        ClojurePluginExtension extension = project.extensions.create("clojure", ClojurePluginExtension, project)
 
         def repos = project.repositories
         repos.convention.plugins.clojure =
             new ClojureRepositoryConvention(repos)
 
         configureSourceSets(project)
-        configureCompilation(project)
+        configureCompilation(project, extension)
         configureDocs(project)
         configureTests(project)
         configureRun(project)
@@ -71,83 +72,79 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureCompilation(project) {
-        project.sourceSets.all { set ->
+    private void configureCompilation(Project project, ClojurePluginExtension extension) {
+        project.sourceSets.all { SourceSet set ->
             if (set.equals(project.sourceSets.test))
                 return
             def compileTaskName = set.getCompileTaskName("clojure")
-            def task = project.task(compileTaskName, type: ClojureCompile) {
+            TaskProvider<ClojureCompile> task = project.tasks.register(compileTaskName, ClojureCompile)
+            task.configure {
                 from set.clojure
-                delayedAotCompile       = { project.clojure.aotCompile }
-                delayedWarnOnReflection = { project.clojure.warnOnReflection }
-                delayedDestinationDir   = { findOutputDir(set) }
-                delayedClasspath = {
-                    project.files(
+                aotCompile.set(extension.aotCompile)
+                warnOnReflection.set(extension.warnOnReflection)
+                classpath.from(
                         set.compileClasspath,
-                        project.configurations.development
-                    )
-                }
+                        project.configurations.findByName('development')?.incoming?.files
+                )
+                destinationDir.set(
+                        findOutputDir(set)
+                )
                 description = "Compile the ${set.name} Clojure source."
             }
             project.tasks[set.classesTaskName].dependsOn task
         }
     }
 
-    private void configureDocs(project) {
-        project.sourceSets.main { set ->
-            def compileTaskName = set.getCompileTaskName("clojure")
+    private void configureDocs(Project project) {
+        project.sourceSets.main { SourceSet set ->
             def docTaskName = set.getTaskName(null, "clojuredoc")
-            def compileTask = project.tasks[compileTaskName]
-            def task = project.task(docTaskName, type: ClojureDoc) {
+            TaskProvider<ClojureDoc> task = project.tasks.register(docTaskName, ClojureDoc)
+            task.configure {
                 from set.clojure
-                delayedDestinationDir = {
-                    project.file(project.docsDir.path + "/clojuredoc")
-                }
-                delayedJvmOptions = { compileTask.jvmOptions }
-                delayedClasspath = { compileTask.classpath }
-                description =
-                    "Generate documentation for the Clojure source."
+                destinationDir.set(project.file(project.docsDir.path + "/clojuredoc"))
+                classpath.from(
+                        set.compileClasspath
+                )
+                description = "Generate documentation for the Clojure source."
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
             }
         }
     }
 
-    private void configureTests(project) {
-        def compileTask = project.tasks[
-            project.sourceSets.main.getCompileTaskName("clojure")
-        ]
-        def clojureTest = project.task("clojureTest", type: ClojureTest) {
+    private void configureTests(Project project) {
+        TaskProvider<ClojureTest> clojureTest = project.tasks.register('clojureTest', ClojureTest)
+        clojureTest.configure {
             from project.sourceSets.test.clojure
-            delayedJvmOptions = { compileTask.jvmOptions }
-            delayedClasspath  = { project.configurations.testRuntimeClasspath }
-            delayedOutputDir = { findOutputDir(project.sourceSets.main) }
-            delayedJunitOutputDir = {
-                project.file(project.layout.buildDirectory.getAsFile().get().path + "/test-results")
-            }
+            classpath.from(
+                    project.configurations.testRuntimeClasspath.incoming.files
+            )
+            outputDir.set(
+                    findOutputDir(project.sourceSets.main)
+            )
+            junit.convention(false)
+            junitOutputDir.set(project.layout.buildDirectory.dir("test-results").getOrNull()?.asFile)
             dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."
             group = JavaBasePlugin.VERIFICATION_GROUP
             if (project.hasProperty("clojuresque.test.vars")) {
-                tests = project.getProperty("clojuresque.test.vars").split(",")
+                tests.set(project.property("clojuresque.test.vars").split(",").toList())
             }
-        }
-        project.tasks.test.dependsOn clojureTest
-        if (project.gradle.startParameter.taskNames.contains('--tests')) {
-            project.tasks.clojureTest.configure {
+            if (project.gradle.startParameter.taskNames.contains('--tests')) {
                 enabled = false
             }
         }
+        project.tasks.test.dependsOn clojureTest
     }
 
-    private void configureRun(project) {
-        project.sourceSets.main { set ->
-            def compileTaskName = set.getCompileTaskName("clojure")
+    private void configureRun(Project project) {
+        project.sourceSets.main { SourceSet set ->
             def runTaskName = set.getTaskName(null, "clojureRun")
-            def compileTask = project.tasks[compileTaskName]
-            def task = project.task(runTaskName, type: ClojureRun) {
+            TaskProvider<ClojureRun> task = project.tasks.register(runTaskName, ClojureRun)
+            task.configure {
                 from set.clojure
-                delayedJvmOptions = { compileTask.jvmOptions }
-                delayedClasspath = { compileTask.classpath }
+                classpath.from(
+                        set.compileClasspath
+                )
                 description = "Run a Clojure command."
                 group = CLOJURE_GROUP
             }

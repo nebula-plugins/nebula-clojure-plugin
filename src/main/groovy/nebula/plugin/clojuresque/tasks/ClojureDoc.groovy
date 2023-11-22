@@ -14,41 +14,47 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 
-import kotka.gradle.utils.ConfigureUtil
-import kotka.gradle.utils.Delayed
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 @CacheableTask
 abstract class ClojureDoc extends ClojureSourceTask {
     @OutputDirectory
-    @Delayed
-    def destinationDir
+    @Optional
+    abstract Property<File> getDestinationDir()
 
+    @InputFiles
     @Classpath
-    @Delayed
-    def classpath
-
-    @Delayed
-    @Internal
-    def jvmOptions
+    abstract ConfigurableFileCollection getClasspath()
 
     @Input
     @Optional
     def codox = [:]
 
+    private final ExecOperations execOperations
+
+    @Inject
+    ClojureDoc(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
+
     @TaskAction
     void clojuredoc() {
-        def destDir = getDestinationDir()
-        if (destDir == null) {
+        if (!destinationDir.isPresent() || destinationDir.get() == null) {
             throw new StopExecutionException("destinationDir not set!")
         }
+        def destDir = destinationDir.get()
         destDir.mkdirs()
 
         def options = [
@@ -80,10 +86,9 @@ abstract class ClojureDoc extends ClojureSourceTask {
             "clojuresque/tasks/doc.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        project.javaexec {
+        execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            ConfigureUtil.configure delegate, this.jvmOptions
             classpath = project.files(
                 this.srcDirs,
                 this.classpath
