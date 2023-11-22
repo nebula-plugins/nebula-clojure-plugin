@@ -16,12 +16,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
 
-public class ClojureExtrasUberJarPlugin implements Plugin<Project> {
-    public void apply(Project project) {
+class ClojureExtrasUberJarPlugin implements Plugin<Project> {
+    void apply(Project project) {
         project.tasks.withType(Jar).asMap.each { name, jar ->
-            project.task("uber" + name, type: Jar) {
-                description =
-                    'Constructs a jar with all runtime dependencies included'
+            project.tasks.register('uber' + name, Jar).configure {
+                description = 'Constructs a jar with all runtime dependencies included'
                 group = "other"
                 dependsOn jar.source, project.configurations.runtimeClasspath
                 String baseName = jar.archiveBaseName.getOrNull() + '-standalone'
