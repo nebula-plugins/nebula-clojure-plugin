@@ -79,7 +79,7 @@ class SourceDirectoryTask extends DefaultTask {
      * @return  The source directories as <code>FileCollection</code>
      */
     def FileCollection getSrcDirs() {
-        project.files(
+        objectFactory.fileCollection().from(
                 srcDirs.collect {
                     (it instanceof SourceDirectorySet) ?
                             it.srcDirs :

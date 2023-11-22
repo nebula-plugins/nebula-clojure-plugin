@@ -37,7 +37,7 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestK
         def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
         clojurefiles.mkdirs()
         new File(clojurefiles, 'app.clj').text = APP_CLJ
-debug = true
+
         when:
         def result = runTasks('build','-s')
 

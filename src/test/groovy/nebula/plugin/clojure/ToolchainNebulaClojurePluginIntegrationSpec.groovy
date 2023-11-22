@@ -21,7 +21,6 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKit
     }
 
     def 'can compile clojure'() {
-        debug = true
         buildFile << '''\
             plugins {
                 id 'com.netflix.nebula.clojure'
