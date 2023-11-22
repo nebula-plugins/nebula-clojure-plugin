@@ -14,12 +14,12 @@ package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
 
-import kotka.gradle.utils.ConfigureUtil
-import kotka.gradle.utils.Delayed
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
@@ -31,12 +31,12 @@ import javax.inject.Inject
 @CacheableTask
 abstract class ClojureDoc extends ClojureSourceTask {
     @OutputDirectory
-    @Delayed
-    def destinationDir
+    @Optional
+    abstract Property<File> getDestinationDir()
 
+    @InputFiles
     @Classpath
-    @Delayed
-    def classpath
+    abstract ConfigurableFileCollection getClasspath()
 
     @Input
     @Optional
@@ -51,10 +51,10 @@ abstract class ClojureDoc extends ClojureSourceTask {
 
     @TaskAction
     void clojuredoc() {
-        def destDir = getDestinationDir()
-        if (destDir == null) {
+        if (!destinationDir.isPresent() || destinationDir.get() == null) {
             throw new StopExecutionException("destinationDir not set!")
         }
+        def destDir = destinationDir.get()
         destDir.mkdirs()
 
         def options = [

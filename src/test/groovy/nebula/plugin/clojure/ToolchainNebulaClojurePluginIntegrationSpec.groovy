@@ -48,7 +48,7 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKit
 
         when:
         def result = runTasks('build', '-i')
-      //  def result = runTasksAndFail('build', '-i')
+       // def result = runTasksAndFail('build', '-i')
 
         then:
         noExceptionThrown()

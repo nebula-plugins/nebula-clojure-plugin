@@ -95,19 +95,17 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureDocs(project) {
-        project.sourceSets.main { set ->
-            def compileTaskName = set.getCompileTaskName("clojure")
+    private void configureDocs(Project project) {
+        project.sourceSets.main { SourceSet set ->
             def docTaskName = set.getTaskName(null, "clojuredoc")
-            def compileTask = project.tasks[compileTaskName]
-            def task = project.task(docTaskName, type: ClojureDoc) {
+            TaskProvider<ClojureDoc> task = project.tasks.register(docTaskName, ClojureDoc)
+            task.configure {
                 from set.clojure
-                delayedDestinationDir = {
-                    project.file(project.docsDir.path + "/clojuredoc")
-                }
-                delayedClasspath = { compileTask.classpath }
-                description =
-                    "Generate documentation for the Clojure source."
+                destinationDir.set(project.file(project.docsDir.path + "/clojuredoc"))
+                classpath.from(
+                        set.compileClasspath
+                )
+                description = "Generate documentation for the Clojure source."
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
             }
         }
@@ -138,8 +136,8 @@ class ClojureBasePlugin implements Plugin<Project> {
         project.tasks.test.dependsOn clojureTest
     }
 
-    private void configureRun(project) {
-        project.sourceSets.main { set ->
+    private void configureRun(Project project) {
+        project.sourceSets.main { SourceSet set ->
             def compileTaskName = set.getCompileTaskName("clojure")
             def runTaskName = set.getTaskName(null, "clojureRun")
             def compileTask = project.tasks[compileTaskName]
