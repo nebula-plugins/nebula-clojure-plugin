@@ -3,6 +3,7 @@ package nebula.plugin.clojuresque.tasks
 import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
@@ -14,9 +15,9 @@ import javax.inject.Inject;
 @DisableCachingByDefault
 abstract class ClojureRun extends ClojureSourceTask {
 
+    @InputFiles
     @Classpath
-    @Delayed
-    def classpath
+    abstract ConfigurableFileCollection getClasspath()
 
     private String fn;
 

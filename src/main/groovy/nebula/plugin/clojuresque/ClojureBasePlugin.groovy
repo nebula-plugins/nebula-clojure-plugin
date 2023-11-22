@@ -138,12 +138,13 @@ class ClojureBasePlugin implements Plugin<Project> {
 
     private void configureRun(Project project) {
         project.sourceSets.main { SourceSet set ->
-            def compileTaskName = set.getCompileTaskName("clojure")
             def runTaskName = set.getTaskName(null, "clojureRun")
-            def compileTask = project.tasks[compileTaskName]
-            def task = project.task(runTaskName, type: ClojureRun) {
+            TaskProvider<ClojureRun> task = project.tasks.register(runTaskName, ClojureRun)
+            task.configure {
                 from set.clojure
-                delayedClasspath = { compileTask.classpath }
+                classpath.from(
+                        set.compileClasspath
+                )
                 description = "Run a Clojure command."
                 group = CLOJURE_GROUP
             }
