@@ -3,6 +3,7 @@ package nebula.plugin.clojuresque.tasks
 import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.ExecOperations
@@ -30,9 +31,12 @@ abstract class ClojureRun extends ClojureSourceTask {
 
     private final ExecOperations execOperations
 
+    private final ObjectFactory objects
+
     @Inject
-    ClojureRun(ExecOperations execOperations) {
+    ClojureRun(ExecOperations execOperations, ObjectFactory objects) {
         this.execOperations = execOperations
+        this.objects = objects
     }
 
     // Example usage: ./gradlew clojureRun --fn='my-ns/my-fn arg1 arg2'
@@ -48,11 +52,12 @@ abstract class ClojureRun extends ClojureSourceTask {
             "clojuresque/tasks/run.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
+        def objectFactory = objects
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions
-            classpath = project.files(
+            classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.classpath
             )

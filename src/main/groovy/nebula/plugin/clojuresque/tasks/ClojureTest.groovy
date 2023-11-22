@@ -15,6 +15,9 @@ package nebula.plugin.clojuresque.tasks
 import kotka.gradle.utils.ConfigureUtil
 import kotka.gradle.utils.Delayed
 import nebula.plugin.clojuresque.Util
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.FileSystemOperations
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -54,9 +57,13 @@ abstract class ClojureTest extends ClojureSourceTask {
 
     private final ExecOperations execOperations
 
+    private final ObjectFactory objects
+
+
     @Inject
-    ClojureTest(ExecOperations execOperations) {
+    ClojureTest(ExecOperations execOperations, ObjectFactory objects) {
         this.execOperations = execOperations
+        this.objects = objects
     }
 
     @TaskAction
@@ -82,11 +89,12 @@ abstract class ClojureTest extends ClojureSourceTask {
             "clojuresque/tasks/test.clj"
         ].collect { owner.class.classLoader.getResourceAsStream(it) }
 
+        def objectFactory = objects
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
             ConfigureUtil.configure delegate, this.jvmOptions
-            classpath = project.files(
+            classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.outputDir,
                 this.classpath
