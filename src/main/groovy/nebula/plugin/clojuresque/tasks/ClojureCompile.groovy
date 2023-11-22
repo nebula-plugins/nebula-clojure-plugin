@@ -61,9 +61,6 @@ abstract class ClojureCompile extends ClojureSourceTask {
     @Internal
     def fileMode = null
 
-    @Internal
-    @Delayed
-    def jvmOptions = {}
 
     private final ExecOperations execOperations
 
@@ -131,7 +128,6 @@ abstract class ClojureCompile extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            ConfigureUtil.configure delegate, this.jvmOptions
             systemProperties "clojure.compile.path": destDir.path
             classpath = objectFactory.fileCollection().from(
                     this.srcDirs,

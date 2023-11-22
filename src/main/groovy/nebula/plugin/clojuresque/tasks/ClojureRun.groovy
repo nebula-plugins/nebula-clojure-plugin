@@ -18,10 +18,6 @@ abstract class ClojureRun extends ClojureSourceTask {
     @Delayed
     def classpath
 
-    @Delayed
-    @Internal
-    def jvmOptions
-
     private String fn;
 
     @Option(option = "fn", description = "The clojure function (and optional args) to execute.")
@@ -56,7 +52,6 @@ abstract class ClojureRun extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            ConfigureUtil.configure delegate, this.jvmOptions
             classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.classpath

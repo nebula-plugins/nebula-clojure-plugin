@@ -38,10 +38,6 @@ abstract class ClojureDoc extends ClojureSourceTask {
     @Delayed
     def classpath
 
-    @Delayed
-    @Internal
-    def jvmOptions
-
     @Input
     @Optional
     def codox = [:]
@@ -93,7 +89,6 @@ abstract class ClojureDoc extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            ConfigureUtil.configure delegate, this.jvmOptions
             classpath = project.files(
                 this.srcDirs,
                 this.classpath

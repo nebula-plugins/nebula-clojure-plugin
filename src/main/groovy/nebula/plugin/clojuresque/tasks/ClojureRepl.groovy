@@ -105,14 +105,6 @@ class ClojureRepl extends DefaultTask {
     }
 
     /**
-     * A <code>Closure</code> configuring the underlying exec spec.
-     * This may be used to set eg. heap sizes etc.
-     */
-    @Delayed
-    @Internal
-    def jvmOptions
-
-    /**
      * The port for the repl server to listen on. A string or integer.
      */
     @Internal

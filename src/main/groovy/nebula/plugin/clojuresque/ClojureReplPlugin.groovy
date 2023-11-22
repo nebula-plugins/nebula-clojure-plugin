@@ -27,7 +27,6 @@ class ClojureReplPlugin implements Plugin<Project> {
 
         project.task("clojureRepl", type: ClojureRepl) {
             port = 7888
-            delayedJvmOptions = { compileTask.jvmOptions }
             delayedClasspath  = {
                 def sourceRoots = project.sourceSets.collect {
                     it.allSource.srcDirs

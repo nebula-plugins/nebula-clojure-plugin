@@ -105,7 +105,6 @@ class ClojureBasePlugin implements Plugin<Project> {
                 delayedDestinationDir = {
                     project.file(project.docsDir.path + "/clojuredoc")
                 }
-                delayedJvmOptions = { compileTask.jvmOptions }
                 delayedClasspath = { compileTask.classpath }
                 description =
                     "Generate documentation for the Clojure source."
@@ -114,31 +113,29 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureTests(project) {
-        def compileTask = project.tasks[
-            project.sourceSets.main.getCompileTaskName("clojure")
-        ]
-        def clojureTest = project.task("clojureTest", type: ClojureTest) {
+    private void configureTests(Project project) {
+        TaskProvider<ClojureTest> clojureTest = project.tasks.register('clojureTest', ClojureTest)
+        clojureTest.configure {
             from project.sourceSets.test.clojure
-            delayedJvmOptions = { compileTask.jvmOptions }
-            delayedClasspath  = { project.configurations.testRuntimeClasspath }
-            delayedOutputDir = { findOutputDir(project.sourceSets.main) }
-            delayedJunitOutputDir = {
-                project.file(project.layout.buildDirectory.getAsFile().get().path + "/test-results")
-            }
+            classpath.from(
+                    project.configurations.testRuntimeClasspath.incoming.files
+            )
+            outputDir.set(
+                    findOutputDir(project.sourceSets.main)
+            )
+            junit.convention(false)
+            junitOutputDir.set(project.layout.buildDirectory.dir("test-results").getOrNull()?.asFile)
             dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."
             group = JavaBasePlugin.VERIFICATION_GROUP
             if (project.hasProperty("clojuresque.test.vars")) {
-                tests = project.getProperty("clojuresque.test.vars").split(",")
+                tests.set(project.property("clojuresque.test.vars").split(",").toList())
             }
-        }
-        project.tasks.test.dependsOn clojureTest
-        if (project.gradle.startParameter.taskNames.contains('--tests')) {
-            project.tasks.clojureTest.configure {
+            if (project.gradle.startParameter.taskNames.contains('--tests')) {
                 enabled = false
             }
         }
+        project.tasks.test.dependsOn clojureTest
     }
 
     private void configureRun(project) {
@@ -148,7 +145,6 @@ class ClojureBasePlugin implements Plugin<Project> {
             def compileTask = project.tasks[compileTaskName]
             def task = project.task(runTaskName, type: ClojureRun) {
                 from set.clojure
-                delayedJvmOptions = { compileTask.jvmOptions }
                 delayedClasspath = { compileTask.classpath }
                 description = "Run a Clojure command."
                 group = CLOJURE_GROUP
