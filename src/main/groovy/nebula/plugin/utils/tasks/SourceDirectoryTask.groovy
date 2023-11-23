@@ -140,13 +140,8 @@ class SourceDirectoryTask extends DefaultTask {
      * @param  sourceSet The source set to add
      * @return this
      */
-    def from(SourceDirectorySet sourceSet) {
+    def from(File sourceSet) {
         srcDirs << sourceSet
-        this
-    }
-
-    def from(DefaultClojureSourceSet sourceSet) {
-        srcDirs << sourceSet.clojure
         this
     }
 

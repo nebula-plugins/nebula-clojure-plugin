@@ -71,7 +71,7 @@ class ClojureBasePlugin implements Plugin<Project> {
             def compileTaskName = set.getCompileTaskName("clojure")
             TaskProvider<ClojureCompile> task = project.tasks.register(compileTaskName, ClojureCompile)
             task.configure {
-                from set.clojure
+                from project.file("src/${set.name}/clojure")
                 aotCompile.set(extension.aotCompile)
                 warnOnReflection.set(extension.warnOnReflection)
                 classpath.from(
@@ -92,7 +92,7 @@ class ClojureBasePlugin implements Plugin<Project> {
             def docTaskName = set.getTaskName(null, "clojuredoc")
             TaskProvider<ClojureDoc> task = project.tasks.register(docTaskName, ClojureDoc)
             task.configure {
-                from set.clojure
+                from project.file("src/${set.name}/clojure")
                 destinationDir.set(project.file(project.docsDir.path + "/clojuredoc"))
                 classpath.from(
                         set.compileClasspath
@@ -106,7 +106,7 @@ class ClojureBasePlugin implements Plugin<Project> {
     private void configureTests(Project project) {
         TaskProvider<ClojureTest> clojureTest = project.tasks.register('clojureTest', ClojureTest)
         clojureTest.configure {
-            from project.sourceSets.test.clojure
+            from project.file("src/test/clojure")
             classpath.from(
                     project.configurations.testRuntimeClasspath.incoming.files
             )
@@ -133,7 +133,7 @@ class ClojureBasePlugin implements Plugin<Project> {
             def runTaskName = set.getTaskName(null, "clojureRun")
             TaskProvider<ClojureRun> task = project.tasks.register(runTaskName, ClojureRun)
             task.configure {
-                from set.clojure
+                from project.file("src/${set.name}/clojure")
                 classpath.from(
                         set.compileClasspath
                 )
