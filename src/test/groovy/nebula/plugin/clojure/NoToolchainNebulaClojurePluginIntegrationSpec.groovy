@@ -2,14 +2,6 @@ package nebula.plugin.clojure
 
 class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
-    def setup() {
-        System.setProperty("ignoreDeprecations", "true")
-    }
-
-    def cleanup() {
-        System.clearProperty("ignoreDeprecations")
-    }
-
     private final APP_CLJ = '''\
             (ns test.nebula.app)
             
@@ -123,8 +115,11 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestK
                 implementation 'org.clojure:clojure:1.10.3'
             }
             
-            sourceCompatibility = 1.8
-            targetCompatibility = 1.8
+            java {
+                sourceCompatibility = 1.8
+                targetCompatibility = 1.8 
+            }
+
             '''.stripIndent()
 
         settingsFile << 'rootProject.name="can-compile-clojure"'

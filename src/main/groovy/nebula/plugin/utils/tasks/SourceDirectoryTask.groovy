@@ -23,7 +23,7 @@
 
 package nebula.plugin.utils.tasks
 
-
+import nebula.plugin.clojuresque.tasks.DefaultClojureSourceSet
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileCollection
@@ -142,6 +142,11 @@ class SourceDirectoryTask extends DefaultTask {
      */
     def from(SourceDirectorySet sourceSet) {
         srcDirs << sourceSet
+        this
+    }
+
+    def from(DefaultClojureSourceSet sourceSet) {
+        srcDirs << sourceSet.clojure
         this
     }
 

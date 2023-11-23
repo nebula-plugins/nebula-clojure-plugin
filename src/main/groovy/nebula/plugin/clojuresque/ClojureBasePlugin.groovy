@@ -57,8 +57,8 @@ class ClojureBasePlugin implements Plugin<Project> {
              def clojureSourceSet =
                 new DefaultClojureSourceSet(sourceSet.name, objectFactory)
 
-            sourceSet.convention.plugins.clojure = clojureSourceSet
-            sourceSet.clojure.srcDir "src/${sourceSet.name}/clojure"
+            sourceSet.extensions.add(DefaultClojureSourceSet.class, "clojure", clojureSourceSet)
+            clojureSourceSet.getClojure().srcDir "src/${sourceSet.name}/clojure"
             sourceSet.allSource.source(clojureSourceSet.clojure)
             sourceSet.allJava.source(clojureSourceSet.clojure)
         }
