@@ -8,7 +8,7 @@ nebula-clojure-plugin
 [![MIT](https://img.shields.io/github/license/nebula-plugins/nebula-clojure-plugin.svg)](https://opensource.org/licenses/MIT)
 
 
-Plugin providing Clojuresque with compatibility fixes for Gradle 2.12 and later. Also avoids the including of clojars logic in a build.
+Plugin providing Clojuresque with compatibility fixes for Gradle 8.x
 
 # Quick Start
 
