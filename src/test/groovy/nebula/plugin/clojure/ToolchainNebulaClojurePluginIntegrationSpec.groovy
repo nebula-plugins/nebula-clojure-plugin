@@ -11,15 +11,6 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKit
               (println "hello" name))
             '''.stripIndent()
 
-
-    def setup() {
-        System.setProperty("ignoreDeprecations", "true")
-    }
-
-    def cleanup() {
-        System.clearProperty("ignoreDeprecations")
-    }
-
     def 'can compile clojure'() {
         buildFile << '''\
             plugins {
@@ -47,7 +38,6 @@ class ToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestKit
 
         when:
         def result = runTasks('build', '-i')
-       // def result = runTasksAndFail('build', '-i')
 
         then:
         noExceptionThrown()

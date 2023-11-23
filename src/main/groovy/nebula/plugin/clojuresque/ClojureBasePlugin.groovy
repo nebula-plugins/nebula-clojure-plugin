@@ -16,7 +16,6 @@ import nebula.plugin.clojuresque.tasks.ClojureCompile
 import nebula.plugin.clojuresque.tasks.ClojureDoc
 import nebula.plugin.clojuresque.tasks.ClojureRun
 import nebula.plugin.clojuresque.tasks.ClojureTest
-import nebula.plugin.clojuresque.tasks.ClojureUploadConvention
 import nebula.plugin.clojuresque.tasks.DefaultClojureSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,7 +24,6 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.Upload
 
 import javax.inject.Inject
 
@@ -43,21 +41,15 @@ class ClojureBasePlugin implements Plugin<Project> {
         project.apply plugin: JavaPlugin
         project.apply plugin: ClojureCommonPlugin
 
-        project.convention.plugins.clojureDeprecated =
-            new ClojurePluginDeprecatedConvention(project)
-
         ClojurePluginExtension extension = project.extensions.create("clojure", ClojurePluginExtension, project)
 
         def repos = project.repositories
-        repos.convention.plugins.clojure =
-            new ClojureRepositoryConvention(repos)
 
         configureSourceSets(project)
         configureCompilation(project, extension)
         configureDocs(project)
         configureTests(project)
         configureRun(project)
-        configureClojarsUpload(project)
     }
 
     private void configureSourceSets(project) {
@@ -65,8 +57,8 @@ class ClojureBasePlugin implements Plugin<Project> {
              def clojureSourceSet =
                 new DefaultClojureSourceSet(sourceSet.name, objectFactory)
 
-            sourceSet.convention.plugins.clojure = clojureSourceSet
-            sourceSet.clojure.srcDir "src/${sourceSet.name}/clojure"
+            sourceSet.extensions.add(DefaultClojureSourceSet.class, "clojure", clojureSourceSet)
+            clojureSourceSet.getClojure().srcDir "src/${sourceSet.name}/clojure"
             sourceSet.allSource.source(clojureSourceSet.clojure)
             sourceSet.allJava.source(clojureSourceSet.clojure)
         }
@@ -151,12 +143,6 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureClojarsUpload(project) {
-        project.tasks.withType(Upload).configureEach { Upload upload ->
-            upload.convention.plugins.clojure =
-                    new ClojureUploadConvention(upload)
-        }
-    }
 
     private File findOutputDir(SourceSet set) {
         return set.output.classesDirs.files.find {

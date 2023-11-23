@@ -24,8 +24,8 @@ class ClojureExtrasUberJarPlugin implements Plugin<Project> {
                 group = "other"
                 dependsOn jar.source, project.configurations.runtimeClasspath
                 String baseName = jar.archiveBaseName.getOrNull() + '-standalone'
-                archiveBaseName.convention baseName
-                archiveBaseName.set baseName
+                archiveBaseName.convention(baseName)
+                archiveBaseName.set(baseName)
                 enabled = false
                 doFirst {
                     project.configurations.runtimeClasspath.each {
