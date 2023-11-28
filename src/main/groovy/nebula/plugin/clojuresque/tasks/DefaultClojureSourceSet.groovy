@@ -15,4 +15,8 @@ class DefaultClojureSourceSet implements ClojureSourceSet {
     SourceDirectorySet getClojure() {
         return clojure
     }
+
+    Set<File> getSrcDirs() {
+        return clojure.getSrcDirs()
+    }
 }
