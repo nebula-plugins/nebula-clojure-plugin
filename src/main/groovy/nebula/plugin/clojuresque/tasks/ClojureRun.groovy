@@ -1,6 +1,7 @@
 package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
+import nebula.plugin.utils.tasks.ConfigureUtil
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.*
@@ -28,6 +29,9 @@ abstract class ClojureRun extends ClojureSourceTask {
 
     private final ObjectFactory objects
 
+    @Internal
+    def jvmOptions = {}
+
     @Inject
     ClojureRun(ExecOperations execOperations, ObjectFactory objects) {
         this.execOperations = execOperations
@@ -51,6 +55,7 @@ abstract class ClojureRun extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
+            ConfigureUtil.configure delegate, jvmOptions
             classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.classpath

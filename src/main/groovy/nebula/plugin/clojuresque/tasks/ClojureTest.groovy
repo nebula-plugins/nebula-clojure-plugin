@@ -13,6 +13,7 @@
 package nebula.plugin.clojuresque.tasks
 
 import nebula.plugin.clojuresque.Util
+import nebula.plugin.utils.tasks.ConfigureUtil
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
@@ -53,6 +54,8 @@ abstract class ClojureTest extends ClojureSourceTask {
 
     private final ObjectFactory objects
 
+    @Internal
+    def jvmOptions = {}
 
     @Inject
     ClojureTest(ExecOperations execOperations, ObjectFactory objects) {
@@ -87,6 +90,7 @@ abstract class ClojureTest extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
+            ConfigureUtil.configure delegate, jvmOptions
             classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.outputDir,

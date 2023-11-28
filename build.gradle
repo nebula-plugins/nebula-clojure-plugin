@@ -39,7 +39,6 @@ dependencies {
     implementation 'org.clojure:clojure:1.10.3'
     implementation 'org.clojure:tools.namespace:1.1.0'
     implementation 'us.bpsm:edn-java:0.4.3'
-
     testImplementation gradleTestKit()
     testImplementation 'com.netflix.nebula:nebula-publishing-plugin:5.+'
 }
