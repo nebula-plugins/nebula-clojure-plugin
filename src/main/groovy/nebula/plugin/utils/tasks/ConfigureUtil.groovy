@@ -6,6 +6,9 @@ package nebula.plugin.utils.tasks
  * @author Meikel Brandmeyer
  */
 class ConfigureUtil {
+
+    public static final int DELEGATE_FIRST = 1
+
     /**
      * Configures the <code>target</code> object. It sets it as the delegate
      * of the <code>configureFn</code> closure and calls the latter. Passes
@@ -19,7 +22,7 @@ class ConfigureUtil {
     static configure(Object target, Closure configureFn={}) {
         def fn = configureFn.clone()
 
-        fn.resolveStrategy = Closure.DELEGATE_FIRST
+        fn.resolveStrategy = DELEGATE_FIRST
         fn.delegate        = target
 
         if (fn.maximumNumberOfParameters == 0)

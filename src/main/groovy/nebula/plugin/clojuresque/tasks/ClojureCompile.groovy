@@ -31,6 +31,7 @@ import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.execution.history.changes.InputChangesInternal
 import org.gradle.process.ExecOperations
+import org.gradle.util.GradleVersion
 import org.gradle.work.ChangeType
 import org.gradle.work.FileChange
 import org.gradle.work.InputChanges
@@ -143,8 +144,26 @@ abstract class ClojureCompile extends ClojureSourceTask {
 
         if (aotCompile.isPresent() && !aotCompile.get()) {
             fileSystemOperations.copy {
-                dirMode  = this.dirMode
-                fileMode = this.fileMode
+                if(this.dirMode != null) {
+                    if(isOlderThanGradle8_3()) {
+                        dirMode = this.dirMode
+                    } else {
+                        dirPermissions {
+                            unix(this.dirMode)
+                        }
+                    }
+                }
+
+                if(this.fileMode != null) {
+                    if(isOlderThanGradle8_3()) {
+                        fileMode = this.fileMode
+                    } else {
+                        filePermissions {
+                            unix(this.fileMode)
+                        }
+                    }
+                }
+
 
                 from(srcDirs) {
                     include {
@@ -178,5 +197,9 @@ abstract class ClojureCompile extends ClojureSourceTask {
         objects.fileTree(getDestinationDir()).include(pattern).files.each {
             it.delete()
         }
+    }
+
+    private static final isOlderThanGradle8_3() {
+        return GradleVersion.current().baseVersion < GradleVersion.version('8.3').baseVersion
     }
 }
