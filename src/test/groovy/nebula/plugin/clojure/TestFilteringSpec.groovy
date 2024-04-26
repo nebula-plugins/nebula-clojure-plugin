@@ -131,7 +131,7 @@ class TestFilteringSpec extends BaseIntegrationTestKitSpec {
         def result = runTasks('test', '--tests', 'HelloWorldTest')
 
         then:
-        result.output.contains('nebula.HelloWorldTest > doesSomething PASSED')
+        result.output.contains('HelloWorldTest > doesSomething PASSED')
         result.output.contains('> Task :clojureTest SKIPPED')
     }
 
@@ -145,7 +145,7 @@ class TestFilteringSpec extends BaseIntegrationTestKitSpec {
         then:
         result.output.contains("Testing test.nebula.test1")
         result.output.contains("Testing test.nebula.test2")
-        result.output.contains('nebula.HelloWorldTest > doesSomething PASSED')
+        result.output.contains('HelloWorldTest > doesSomething PASSED')
     }
 
     private void addJavaProjectSetup() {
