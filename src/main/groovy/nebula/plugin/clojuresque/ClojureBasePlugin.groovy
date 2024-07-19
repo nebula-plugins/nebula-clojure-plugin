@@ -22,6 +22,7 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 
@@ -45,15 +46,19 @@ class ClojureBasePlugin implements Plugin<Project> {
 
         def repos = project.repositories
 
-        configureSourceSets(project)
-        configureCompilation(project, extension)
-        configureDocs(project)
-        configureTests(project)
-        configureRun(project)
+        JavaPluginExtension javaPluginExtension = project.extensions.findByType(JavaPluginExtension)
+        if (!javaPluginExtension) {
+            return
+        }
+        configureSourceSets(project, javaPluginExtension)
+        configureCompilation(project, extension, javaPluginExtension)
+        configureDocs(project, javaPluginExtension)
+        configureTests(project, javaPluginExtension)
+        configureRun(project, javaPluginExtension)
     }
 
-    private void configureSourceSets(project) {
-        project.sourceSets.all { SourceSet sourceSet ->
+    private void configureSourceSets(project, JavaPluginExtension javaPluginExtension) {
+        javaPluginExtension.sourceSets.all { SourceSet sourceSet ->
              def clojureSourceSet =
                 new DefaultClojureSourceSet(sourceSet.name, objectFactory)
 
@@ -64,9 +69,9 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureCompilation(Project project, ClojurePluginExtension extension) {
-        project.sourceSets.all { SourceSet set ->
-            if (set.equals(project.sourceSets.test))
+    private void configureCompilation(Project project, ClojurePluginExtension extension, JavaPluginExtension javaPluginExtension) {
+        javaPluginExtension.sourceSets.all { SourceSet set ->
+            if (set.equals(javaPluginExtension.sourceSets.test))
                 return
             def compileTaskName = set.getCompileTaskName("clojure")
             TaskProvider<ClojureCompile> task = project.tasks.register(compileTaskName, ClojureCompile)
@@ -87,13 +92,14 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureDocs(Project project) {
-        project.sourceSets.main { SourceSet set ->
+    private void configureDocs(Project project, JavaPluginExtension javaPluginExtension) {
+        javaPluginExtension.sourceSets.main { SourceSet set ->
             def docTaskName = set.getTaskName(null, "clojuredoc")
             TaskProvider<ClojureDoc> task = project.tasks.register(docTaskName, ClojureDoc)
             task.configure {
                 from project.file("src/${set.name}/clojure")
-                destinationDir.set(project.file(project.docsDir.path + "/clojuredoc"))
+
+                destinationDir.set(project.file(javaPluginExtension.docsDir.dir("clojuredoc")))
                 classpath.from(
                         set.compileClasspath
                 )
@@ -103,7 +109,7 @@ class ClojureBasePlugin implements Plugin<Project> {
         }
     }
 
-    private void configureTests(Project project) {
+    private void configureTests(Project project, JavaPluginExtension javaPluginExtension) {
         TaskProvider<ClojureTest> clojureTest = project.tasks.register('clojureTest', ClojureTest)
         clojureTest.configure {
             from project.file("src/test/clojure")
@@ -111,7 +117,7 @@ class ClojureBasePlugin implements Plugin<Project> {
                     project.configurations.testRuntimeClasspath.incoming.files
             )
             outputDir.set(
-                    findOutputDir(project.sourceSets.main)
+                    findOutputDir(javaPluginExtension.sourceSets.main)
             )
             junit.convention(false)
             junitOutputDir.set(project.layout.buildDirectory.dir("test-results").getOrNull()?.asFile)
@@ -128,8 +134,8 @@ class ClojureBasePlugin implements Plugin<Project> {
         project.tasks.test.dependsOn clojureTest
     }
 
-    private void configureRun(Project project) {
-        project.sourceSets.main { SourceSet set ->
+    private void configureRun(Project project, JavaPluginExtension javaPluginExtension) {
+        javaPluginExtension.sourceSets.main { SourceSet set ->
             def runTaskName = set.getTaskName(null, "clojureRun")
             TaskProvider<ClojureRun> task = project.tasks.register(runTaskName, ClojureRun)
             task.configure {
