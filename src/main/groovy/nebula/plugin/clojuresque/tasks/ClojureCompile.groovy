@@ -97,13 +97,14 @@ abstract class ClojureCompile extends ClojureSourceTask {
             "file-dependencies"
         )
 
-        def dependencyGraph = fileDependencies.invoke(source.files)
+        ObjectFactory objectFactory = objects
 
+        def dependencyGraph = fileDependencies.invoke(source.files)
         def outOfDateInputs = [] as Set
         inputChangesInternal.allFileChanges.each { FileChange change ->
             if (change.fileType == FileType.DIRECTORY) return
             if (change.changeType == ChangeType.REMOVED && change.file.name.endsWith(".clj")) {
-                deleteDerivedFiles(objects, change.file)
+                deleteDerivedFiles(objectFactory, change.file)
             } else if(change.changeType in [ChangeType.ADDED, ChangeType.MODIFIED] && change.file.name.endsWith(".clj")) {
                 outOfDateInputs << change.file
             }
@@ -122,7 +123,6 @@ abstract class ClojureCompile extends ClojureSourceTask {
             "clojuresque/tasks/compile.clj"
         ].collect { owner.class.classLoader.getResourceAsStream it }
 
-        def objectFactory = objects
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
@@ -194,7 +194,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
 
         def pattern = relativeParent.replaceAll("\\.clj\$", "") + "*"
 
-        objects.fileTree(getDestinationDir()).include(pattern).files.each {
+        objects.fileTree().from(getDestinationDir()).include(pattern).files.each {
             it.delete()
         }
     }
