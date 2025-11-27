@@ -79,16 +79,19 @@ class ClojureBasePlugin implements Plugin<Project> {
                 from project.file("src/${set.name}/clojure")
                 aotCompile.set(extension.aotCompile)
                 warnOnReflection.set(extension.warnOnReflection)
-                classpath.from(
-                        set.compileClasspath,
-                        project.configurations.findByName('development')?.incoming?.files
-                )
+                classpath.from(set.compileClasspath)
+                def developmentConfig = project.configurations.findByName('development')
+                if (developmentConfig != null) {
+                    classpath.from(developmentConfig)
+                }
                 destinationDir.set(
                         findOutputDir(set)
                 )
                 description = "Compile the ${set.name} Clojure source."
             }
-            project.tasks[set.classesTaskName].dependsOn task
+            project.tasks.named(set.classesTaskName).configure {
+                dependsOn task
+            }
         }
     }
 
@@ -103,6 +106,10 @@ class ClojureBasePlugin implements Plugin<Project> {
                 classpath.from(
                         set.compileClasspath
                 )
+                projectName.set(project.name)
+                projectDescription.set(project.provider { project.description ?: "" })
+                projectVersion.set(project.provider { project.version?.toString() ?: "" })
+                projectDirectory.set(project.layout.projectDirectory)
                 description = "Generate documentation for the Clojure source."
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
             }
@@ -131,7 +138,9 @@ class ClojureBasePlugin implements Plugin<Project> {
                 enabled = false
             }
         }
-        project.tasks.test.dependsOn clojureTest
+        project.tasks.named('test').configure {
+            dependsOn clojureTest
+        }
     }
 
     private void configureRun(Project project, JavaPluginExtension javaPluginExtension) {
