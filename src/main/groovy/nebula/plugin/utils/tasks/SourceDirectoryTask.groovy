@@ -154,7 +154,7 @@ class SourceDirectoryTask extends DefaultTask {
     @InputFiles
     @SkipWhenEmpty
     @IgnoreEmptyDirectories
-    @PathSensitive(PathSensitivity.NONE)
+    @PathSensitive(PathSensitivity.RELATIVE)
     def FileTree getSource() {
         objectFactory.fileCollection().from(srcDirs).asFileTree
     }

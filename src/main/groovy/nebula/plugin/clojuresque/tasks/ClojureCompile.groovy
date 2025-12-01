@@ -22,10 +22,11 @@ import org.gradle.api.file.FileType
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.CompileClasspath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
@@ -45,7 +46,7 @@ abstract class ClojureCompile extends ClojureSourceTask {
     abstract Property<File> getDestinationDir()
 
     @InputFiles
-    @Classpath
+    @CompileClasspath
     abstract ConfigurableFileCollection getClasspath()
 
     @Input
@@ -54,11 +55,13 @@ abstract class ClojureCompile extends ClojureSourceTask {
     @Input
     abstract Property<Boolean> getWarnOnReflection()
 
-    @Internal
-    def dirMode  = null
-    @Internal
-    def fileMode = null
+    @Input
+    @Optional
+    abstract Property<Integer> getDirMode()
 
+    @Input
+    @Optional
+    abstract Property<Integer> getFileMode()
 
     private final ExecOperations execOperations
 
@@ -144,22 +147,24 @@ abstract class ClojureCompile extends ClojureSourceTask {
 
         if (aotCompile.isPresent() && !aotCompile.get()) {
             fileSystemOperations.copy {
-                if(this.dirMode != null) {
+                if(this.dirMode.isPresent()) {
+                    def dirModeValue = this.dirMode.get()
                     if(isOlderThanGradle8_3()) {
-                        dirMode = this.dirMode
+                        dirMode = dirModeValue
                     } else {
                         dirPermissions {
-                            unix(this.dirMode)
+                            unix(dirModeValue)
                         }
                     }
                 }
 
-                if(this.fileMode != null) {
+                if(this.fileMode.isPresent()) {
+                    def fileModeValue = this.fileMode.get()
                     if(isOlderThanGradle8_3()) {
-                        fileMode = this.fileMode
+                        fileMode = fileModeValue
                     } else {
                         filePermissions {
-                            unix(this.fileMode)
+                            unix(fileModeValue)
                         }
                     }
                 }

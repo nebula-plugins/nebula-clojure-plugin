@@ -55,12 +55,16 @@ abstract class ClojureTest extends ClojureSourceTask {
     private final ObjectFactory objects
 
     @Internal
-    def jvmOptions = {}
+    Closure jvmOptions = {}
 
     @Inject
     ClojureTest(ExecOperations execOperations, ObjectFactory objects) {
         this.execOperations = execOperations
         this.objects = objects
+    }
+
+    void jvmOptions(Closure closure) {
+        this.jvmOptions = closure
     }
 
     @TaskAction

@@ -17,13 +17,12 @@ import org.gradle.api.Project
 
 public class ClojureCommonPlugin implements Plugin<Project> {
     void apply(Project project) {
-
-        project.configurations {
-            development {
-                transitive = true
-                visible = false
-                description = "Development only dependencies"
-            }
+        project.configurations.register("development") { conf ->
+            conf.setCanBeConsumed(false)
+            conf.setCanBeResolved(true)
+            conf.setTransitive(true)
+            conf.setVisible(false)
+            conf.setDescription("Development only dependencies")
         }
     }
 }

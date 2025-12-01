@@ -15,13 +15,19 @@ package nebula.plugin.clojuresque.tasks
 import nebula.plugin.clojuresque.Util
 
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
@@ -40,13 +46,32 @@ abstract class ClojureDoc extends ClojureSourceTask {
 
     @Input
     @Optional
-    def codox = [:]
+    abstract MapProperty<String, Object> getCodox()
+
+    @Input
+    abstract Property<String> getProjectName()
+
+    @Input
+    abstract Property<String> getProjectDescription()
+
+    @Input
+    abstract Property<String> getProjectVersion()
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract DirectoryProperty getProjectDirectory()
 
     private final ExecOperations execOperations
+    private final ObjectFactory objectFactory
 
     @Inject
-    ClojureDoc(ExecOperations execOperations) {
+    ClojureDoc(ExecOperations execOperations, ObjectFactory objectFactory) {
         this.execOperations = execOperations
+        this.objectFactory = objectFactory
+        codox.convention([:])
+        projectName.convention("")
+        projectDescription.convention("")
+        projectVersion.convention("")
     }
 
     @TaskAction
@@ -60,13 +85,13 @@ abstract class ClojureDoc extends ClojureSourceTask {
         def options = [
             destinationDir:  destDir.path,
             project: [
-                name:        project.name ?: "",
-                description: project.description ?: "",
-                version:     project.version ?: ""
+                name:        projectName.get(),
+                description: projectDescription.get(),
+                version:     projectVersion.get()
             ],
-            codox:           codox,
+            codox:           codox.get(),
             sourceDirs:      srcDirs.files.collect {
-                relativize(it, project.projectDir)
+                relativize(it, projectDirectory.get().asFile)
             },
             sourceFiles:     source*.path
         ]
@@ -89,7 +114,7 @@ abstract class ClojureDoc extends ClojureSourceTask {
         execOperations.javaexec {
             setMainClass("clojure.main")
             args('-')
-            classpath = project.files(
+            classpath = objectFactory.fileCollection().from(
                 this.srcDirs,
                 this.classpath
             )
@@ -108,7 +133,7 @@ abstract class ClojureDoc extends ClojureSourceTask {
             "js/page_effects.js",
             "js/jquery.min.js"
         ].each { f ->
-            def dest = project.file("${destinationDir}/${f}")
+            def dest = new File(destinationDir.get(), f)
             println "${f}"
             if (!dest.exists()) {
                 dest.parentFile.mkdirs()

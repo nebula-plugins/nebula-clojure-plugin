@@ -22,11 +22,11 @@ plugins {
 
 // Any callers need to have this repository too.
 repositories {
-    maven { url 'https://clojars.org/repo' }
+    maven { url = 'https://clojars.org/repo' }
     mavenCentral()
 }
 
-description 'Small wrapper around clojuresque'
+description = 'Small wrapper around clojuresque'
 
 contacts {
     'nebula-plugins-oss@netflix.com' {

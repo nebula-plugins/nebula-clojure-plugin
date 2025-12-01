@@ -4,6 +4,7 @@ import nebula.plugin.clojuresque.Util
 import nebula.plugin.utils.tasks.ConfigureUtil
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
 import org.gradle.process.ExecOperations
@@ -18,11 +19,13 @@ abstract class ClojureRun extends ClojureSourceTask {
     @Classpath
     abstract ConfigurableFileCollection getClasspath()
 
-    private String fn;
+    @Input
+    @Optional
+    abstract Property<String> getFn()
 
     @Option(option = "fn", description = "The clojure function (and optional args) to execute.")
     public void setFn(String fn) {
-        this.fn = fn;
+        this.getFn().set(fn)
     }
 
     private final ExecOperations execOperations
@@ -30,7 +33,7 @@ abstract class ClojureRun extends ClojureSourceTask {
     private final ObjectFactory objects
 
     @Internal
-    def jvmOptions = {}
+    Closure jvmOptions = {}
 
     @Inject
     ClojureRun(ExecOperations execOperations, ObjectFactory objects) {
@@ -38,12 +41,16 @@ abstract class ClojureRun extends ClojureSourceTask {
         this.objects = objects
     }
 
+    void jvmOptions(Closure closure) {
+        this.jvmOptions = closure
+    }
+
     // Example usage: ./gradlew clojureRun --fn='my-ns/my-fn arg1 arg2'
     @TaskAction
     void run() {
 
         def options = [
-            fn: fn
+            fn: fn.getOrNull()
         ]
 
         def runtime = [
