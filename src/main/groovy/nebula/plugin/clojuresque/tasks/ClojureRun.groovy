@@ -19,13 +19,17 @@ abstract class ClojureRun extends ClojureSourceTask {
     @Classpath
     abstract ConfigurableFileCollection getClasspath()
 
+    private final Property<String> fn
+
     @Input
     @Optional
-    abstract Property<String> getFn()
+    Property<String> getFn() {
+        return fn
+    }
 
     @Option(option = "fn", description = "The clojure function (and optional args) to execute.")
     public void setFn(String fn) {
-        this.getFn().set(fn)
+        this.fn.set(fn)
     }
 
     private final ExecOperations execOperations
@@ -39,6 +43,7 @@ abstract class ClojureRun extends ClojureSourceTask {
     ClojureRun(ExecOperations execOperations, ObjectFactory objects) {
         this.execOperations = execOperations
         this.objects = objects
+        this.fn = objects.property(String)
     }
 
     void jvmOptions(Closure closure) {
@@ -50,7 +55,7 @@ abstract class ClojureRun extends ClojureSourceTask {
     void run() {
 
         def options = [
-            fn: fn.getOrNull()
+            fn: getFn().getOrNull()
         ]
 
         def runtime = [
