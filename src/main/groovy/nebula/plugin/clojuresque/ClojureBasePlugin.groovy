@@ -161,7 +161,7 @@ class ClojureBasePlugin implements Plugin<Project> {
 
     private File findOutputDir(SourceSet set) {
         return set.output.classesDirs.files.find {
-            it.path.contains('clojure/main') || it.path.contains('java/main')
+            it.path.contains("clojure${File.separator}main") || it.path.contains("java${File.separator}main")
         }
     }
 }
