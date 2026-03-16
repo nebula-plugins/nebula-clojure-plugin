@@ -23,6 +23,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 
@@ -32,10 +33,12 @@ class ClojureBasePlugin implements Plugin<Project> {
     static final String CLOJURE_GROUP = "clojure development"
 
     private final ObjectFactory objectFactory
+    private final ProviderFactory providerFactory
 
     @Inject
-    ClojureBasePlugin(ObjectFactory objectFactory) {
+    ClojureBasePlugin(ObjectFactory objectFactory, ProviderFactory providerFactory) {
         this.objectFactory = objectFactory
+        this.providerFactory = providerFactory
     }
 
     void apply(Project project) {
@@ -107,8 +110,10 @@ class ClojureBasePlugin implements Plugin<Project> {
                         set.compileClasspath
                 )
                 projectName.set(project.name)
-                projectDescription.set(project.provider { project.description ?: "" })
-                projectVersion.set(project.provider { project.version?.toString() ?: "" })
+                def desc = project.description
+                def ver = project.version
+                projectDescription.set(providerFactory.provider { desc ?: "" })
+                projectVersion.set(providerFactory.provider { ver?.toString() ?: "" })
                 projectDirectory.set(project.layout.projectDirectory)
                 description = "Generate documentation for the Clojure source."
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
