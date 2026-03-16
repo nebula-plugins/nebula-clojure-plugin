@@ -107,8 +107,8 @@ class ClojureBasePlugin implements Plugin<Project> {
                         set.compileClasspath
                 )
                 projectName.set(project.name)
-                projectDescription.set(project.provider { project.description ?: "" })
-                projectVersion.set(project.provider { project.version?.toString() ?: "" })
+                projectDescription.set(project.description ?: "")
+                projectVersion.set(project.version?.toString() ?: "")
                 projectDirectory.set(project.layout.projectDirectory)
                 description = "Generate documentation for the Clojure source."
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
