@@ -40,6 +40,36 @@ class NoToolchainNebulaClojurePluginIntegrationSpec extends BaseIntegrationTestK
         new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
     }
 
+    def 'can compile clojure when non-clojure files are present in the source directory'() {
+        buildFile << '''\
+            plugins {
+                id 'com.netflix.nebula.clojure'
+            }
+
+            repositories { mavenCentral() }
+
+            dependencies {
+                implementation 'org.clojure:clojure:1.10.3'
+            }
+            '''.stripIndent()
+
+        settingsFile << 'rootProject.name="can-compile-clojure-with-readme"'
+
+        def clojurefiles = new File(projectDir, 'src/main/clojure/test/nebula')
+        clojurefiles.mkdirs()
+        new File(clojurefiles, 'app.clj').text = APP_CLJ
+        new File(clojurefiles, 'README.md').text = '# Not a clojure file'
+
+        when:
+        def result = runTasks('build', '-s')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        new File(projectDir, "//build/classes/java/main/test/nebula/app.clj").exists()
+    }
+
     def 'can compile clojure with aotCompile'() {
         buildFile << '''\
             plugins {

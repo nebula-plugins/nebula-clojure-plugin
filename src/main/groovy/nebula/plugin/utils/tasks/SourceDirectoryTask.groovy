@@ -156,6 +156,8 @@ class SourceDirectoryTask extends DefaultTask {
     @IgnoreEmptyDirectories
     @PathSensitive(PathSensitivity.RELATIVE)
     def FileTree getSource() {
-        objectFactory.fileCollection().from(srcDirs).asFileTree
+        objectFactory.fileCollection().from(srcDirs).asFileTree.matching {
+            include "**/*.clj", "**/*.cljs", "**/*.cljc"
+        }
     }
 }
