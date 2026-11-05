@@ -54,7 +54,7 @@ defining a new minimum supported Gradle/JDK version.
 `build clojuredoc` can run together with strict configuration-cache validation,
 including Isolated Projects, in single, sibling, and nested projects where each
 participating project applies and configures the plugin locally. Coverage uses
-Gradle 8.0 on a compatible JVM and the current wrapper (9.2.1).
+Gradle 8.0 on a compatible JVM, the current wrapper (9.2.1), and Gradle 9.8.2.
 
 Documentation tracks Clojure source files, relative source-directory paths,
 classpath dependencies, Codox options, and project name, description, and version.
@@ -63,7 +63,39 @@ source-link paths; unrelated project files and build outputs are no longer input
 Generated HTML, source links, static assets, configuration-cache reuse, and
 regeneration after output deletion are verified.
 
-These checks do not define a new minimum supported Gradle/JDK version or establish
-whole-plugin isolation compatibility. Cross-project consumer configuration must
-still be replaced with local configuration for Isolated Projects. Enabled
-uber-JAR tasks remain a separate configuration-cache limitation.
+# Uber-JARs
+
+Uber-JAR tasks are disabled by default. Task creation retains its existing scope:
+only `Jar` tasks already realized when the extras plugin is applied participate.
+For example:
+
+```groovy
+plugins {
+    id 'java'
+    id 'com.netflix.nebula.clojure' apply false
+}
+tasks.named('jar').get()
+apply plugin: 'com.netflix.nebula.clojure'
+
+tasks.named('uberjar') {
+    enabled = true
+}
+```
+
+`uber<jarTaskName>` combines the original task's sources and expanded
+`runtimeClasspath` archives. Its default archive base name adds `-standalone` to
+the original base name. These remain ordinary `Jar` tasks supporting archive-name,
+manifest, exclusion, and additional-source customization. Dependency manifests
+and `META-INF/*.SF`, `*.DSA`, and `*.RSA` signatures are excluded; the uber-JAR
+keeps its own manifest.
+
+Enabled execution is verified with strict configuration-cache validation and
+Isolated Projects on the same versions and project layouts as documentation.
+Tests check actual archive contents, application and dependency edits, cold cache
+storage, warm reuse, and regeneration after deleting the archive.
+
+This coverage does not define a new minimum supported Gradle/JDK version or
+establish whole-plugin isolation compatibility. Each participating project must
+configure the plugin locally; consumer cross-project configuration remains
+outside this verified scope. Custom documentation writers must declare any
+additional files they read as task inputs.

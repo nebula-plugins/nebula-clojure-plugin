@@ -72,8 +72,9 @@ class IsolatedProjectsSpec extends BaseIntegrationTestKitSpec {
         def changedConfiguration = execute(version, isolated, requested + FILTER)
 
         then:
-        stored(changedConfiguration)
-        !changedConfiguration.output.contains('Reusing configuration cache.')
+        // Newer Gradle versions can re-read provider-backed task inputs without configuring again.
+        changedConfiguration.output.contains('Configuration cache entry stored') ||
+            changedConfiguration.output.contains('Configuration cache entry reused')
         participants.every { path ->
             changedConfiguration.task(taskPath(path, 'compileClojure')).outcome == TaskOutcome.SUCCESS &&
                 jarEntries(path).contains(mainResource(path, '.clj'))
@@ -92,33 +93,133 @@ class IsolatedProjectsSpec extends BaseIntegrationTestKitSpec {
     }
 
     @Unroll
-    def 'characterization: enabled uberjar captures execution state on Gradle #version, isolation=#isolated'() {
+    def 'enabled uberjar tracks archive inputs in #topology on Gradle #version, isolation=#isolated'() {
+        given:
+        def participants = uberFixture(topology)
+        def requested = participants.collect { taskPath(it, 'uberjar') }
+        def leaf = participants.last()
+
+        when: 'the opt-in workflow runs without configuration cache'
+        def baseline = runner(version, requested + '--no-configuration-cache').build()
+
+        then:
+        participants.every { path ->
+            baseline.task(taskPath(path, 'uberjar')).outcome == TaskOutcome.SUCCESS &&
+                assertUberArchive(path, 'app-v1', 'runtime-v1')
+        }
+
+        when: 'cold storage also executes archive creation'
+        participants.each { assert uberArchive(it).delete() }
+        def first = execute(version, isolated, requested)
+        def second = execute(version, isolated, requested)
+
+        then:
+        stored(first)
+        reused(second)
+        participants.every { path ->
+            first.task(taskPath(path, 'uberjar')).outcome == TaskOutcome.SUCCESS &&
+                second.task(taskPath(path, 'uberjar')).outcome == TaskOutcome.UP_TO_DATE &&
+                assertUberArchive(path, 'app-v1', 'runtime-v1')
+        }
+        topology == 'single' || new JarFile(uberArchive(leaf)).withCloseable {
+            it.getEntry('assessment/library.clj') != null
+        }
+
+        when: 'the archive is deleted while configuration remains cached'
+        assert uberArchive(leaf).delete()
+        def regenerated = execute(version, isolated, requested)
+
+        then:
+        reused(regenerated)
+        regenerated.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.SUCCESS
+        assertUberArchive(leaf, 'app-v1', 'runtime-v1')
+
+        when: 'application sources change'
+        def source = new File(projectDir, relative(leaf, 'src/main/clojure/' + mainResource(leaf, '.clj')))
+        source.text = source.text.replace('app-v1', 'app-v2')
+        def changedSource = execute(version, isolated, requested)
+
+        then:
+        reused(changedSource)
+        changedSource.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.SUCCESS
+        assertUberArchive(leaf, 'app-v2', 'runtime-v1')
+
+        when: 'a runtime archive changes in place without changing configuration'
+        writeRuntimeJar(leaf, 'runtime-v2')
+        def changedDependency = execute(version, isolated, requested)
+        def dependencyReuse = execute(version, isolated, requested)
+
+        then:
+        reused(changedDependency)
+        changedDependency.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.SUCCESS
+        changedDependency.task(taskPath(leaf, 'compileClojure')).outcome == TaskOutcome.UP_TO_DATE
+        assertUberArchive(leaf, 'app-v2', 'runtime-v2')
+        reused(dependencyReuse)
+        dependencyReuse.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.UP_TO_DATE
+
+        when: 'consumers override archive naming and manifest settings'
+        new File(projectDir, relative(leaf, 'build.gradle')) << '''
+            tasks.named('uberjar') {
+                archiveBaseName.set('custom-archive')
+                archiveVersion.set('2.0')
+                archiveClassifier.set('bundle')
+                manifest { attributes('Updated-Manifest': 'configured') }
+            }
+        '''.stripIndent()
+        def customized = execute(version, isolated, requested)
+        def customizedReuse = execute(version, isolated, requested)
+        def customJar = new File(projectDir, relative(leaf, 'build/libs/custom-archive-2.0-bundle.jar'))
+
+        then:
+        stored(customized)
+        customized.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.SUCCESS
+        assertUberArchive(leaf, 'app-v2', 'runtime-v2', customJar)
+        new JarFile(customJar).withCloseable { it.manifest.mainAttributes.getValue('Updated-Manifest') == 'configured' }
+        reused(customizedReuse)
+        customizedReuse.task(taskPath(leaf, 'uberjar')).outcome == TaskOutcome.UP_TO_DATE
+
+        where:
+        [version, isolated, topology] << [VERSIONS, [false, true], ['single', 'multi', 'nested']].combinations()
+    }
+
+    @Unroll
+    def 'uberjar keeps opt-in and realized task selection on Gradle #version, isolation=#isolated'() {
         given:
         fixture('single')
-        // The implementation takes a snapshot of already-realized Jar tasks.
         buildFile.text = buildFile.text.replace("plugins { id 'com.netflix.nebula.clojure' }", '''
             plugins { id 'java'; id 'com.netflix.nebula.clojure' apply false }
             tasks.named('jar').get()
+            tasks.register('dormant', Jar)
+            tasks.create('bundle', Jar) {
+                archiveBaseName.set('additional')
+                from('bundle.txt')
+            }
             apply plugin: 'com.netflix.nebula.clojure'
+            tasks.register('later', Jar)
+            assert !tasks.names.contains('uberdormant')
+            assert !tasks.names.contains('uberlater')
         '''.stripIndent())
-        buildFile << "\ntasks.named('uberjar') { enabled = true }\n"
-
-        when: 'the existing opt-in workflow runs without configuration cache'
-        def baseline = runner(version, ['uberjar', '--no-configuration-cache']).build()
-
-        then:
-        baseline.task(':uberjar').outcome == TaskOutcome.SUCCESS
-        new File(projectDir, 'build/libs/assessment-standalone-1.0.jar').exists()
+        buildFile << "\ntasks.named('uberbundle') { enabled = true }\n"
+        write('bundle.txt', 'additional Jar task contents')
+        def requested = ['uberjar', 'uberbundle']
+        def additional = new File(projectDir, 'build/libs/additional-standalone-1.0.jar')
 
         when:
-        def failure = execute(version, isolated, ['uberjar'], true)
+        def first = execute(version, isolated, requested)
+        def second = execute(version, isolated, requested)
 
-        then: 'expected-failure characterization of an existing configuration-cache blocker'
-        failure.output.contains('Configuration cache')
-        failure.output.contains("a subtype of 'org.gradle.api.Project'")
-        failure.output.contains("a subtype of 'org.gradle.api.Task'")
-        failure.output.contains('Configuration cache entry discarded')
-        !failure.output.contains('Configuration cache entry reused')
+        then:
+        stored(first)
+        reused(second)
+        first.task(':uberjar').outcome == TaskOutcome.SKIPPED
+        second.task(':uberjar').outcome == TaskOutcome.SKIPPED
+        !uberArchive(':').exists()
+        first.task(':uberbundle').outcome == TaskOutcome.SUCCESS
+        second.task(':uberbundle').outcome == TaskOutcome.UP_TO_DATE
+        new JarFile(additional).withCloseable {
+            it.getInputStream(it.getEntry('bundle.txt')).text == 'additional Jar task contents' &&
+                it.getEntry('clojure/main.class') != null
+        }
 
         where:
         [version, isolated] << [VERSIONS, [false, true]].combinations()
@@ -378,6 +479,81 @@ class IsolatedProjectsSpec extends BaseIntegrationTestKitSpec {
         [version, isolated] << [VERSIONS, [false, true]].combinations()
     }
 
+    private List<String> uberFixture(String topology) {
+        def participants = fixture(topology)
+        write('gradle.properties', 'assessment.aot=false\n')
+        participants.each { path ->
+            def script = new File(projectDir, relative(path, 'build.gradle'))
+            script.text = script.text.replace("plugins { id 'com.netflix.nebula.clojure' }", '''
+                plugins { id 'java'; id 'com.netflix.nebula.clojure' apply false }
+                // Retain the existing snapshot of already-realized Jar tasks.
+                tasks.named('jar').get()
+                tasks.register('dormant', Jar)
+                apply plugin: 'com.netflix.nebula.clojure'
+                tasks.register('later', Jar)
+                assert !tasks.names.contains('uberdormant')
+                assert !tasks.names.contains('uberlater')
+            '''.stripIndent())
+            script << '''
+                dependencies { runtimeOnly files('runtime-only.jar') }
+                tasks.named('uberjar') {
+                    enabled = true
+                    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                    manifest { attributes('Consumer-Manifest': 'kept') }
+                    from('uber-extra.txt') { into 'consumer' }
+                    exclude 'drop-me.txt'
+                }
+                tasks.named('uberjar').get()
+                // Original Jar customization after the uber task is realized must still work.
+                tasks.named('jar') { from('jar-extra.txt') }
+            '''.stripIndent()
+            write(relative(path, 'jar-extra.txt'), 'original Jar customization')
+            write(relative(path, 'uber-extra.txt'), 'uber Jar customization')
+            write(relative(path, 'src/main/resources/application.txt'), 'application resources')
+            writeRuntimeJar(path, 'runtime-v1')
+        }
+        participants
+    }
+
+    private void writeRuntimeJar(String path, String value) {
+        def marker = path == ':' ? 'root' : path.tokenize(':').last()
+        writeJar(relative(path, 'runtime-only.jar'), [
+            ("runtime/${marker}.txt".toString()): value,
+            ("META-INF/services/${marker}".toString()): 'service resource',
+            'META-INF/MANIFEST.MF': 'Manifest-Version: 1.0\nDependency-Only: excluded\n\n',
+            'META-INF/DEPENDENCY.SF': 'signature',
+            'META-INF/DEPENDENCY.DSA': 'signature',
+            'META-INF/DEPENDENCY.RSA': 'signature',
+            'drop-me.txt': 'excluded by consumer'
+        ])
+    }
+
+    private File uberArchive(String path) {
+        def name = path == ':' ? 'assessment' : path.tokenize(':').last()
+        new File(projectDir, relative(path, "build/libs/${name}-standalone-1.0.jar"))
+    }
+
+    private boolean assertUberArchive(String path, String sourceValue, String runtimeValue, File archive = uberArchive(path)) {
+        def marker = path == ':' ? 'root' : path.tokenize(':').last()
+        new JarFile(archive).withCloseable { jar ->
+            def entries = jar.entries().collect { it.name }
+            assert entries.contains(mainResource(path, '.clj'))
+            assert entries.contains('clojure/main.class')
+            assert entries.contains("META-INF/services/$marker".toString())
+            assert !entries.any { it ==~ /META-INF\/.*\.(SF|DSA|RSA)/ }
+            assert !entries.contains('drop-me.txt')
+            assert entries.count { it == 'META-INF/MANIFEST.MF' } == 1
+            assert jar.manifest.mainAttributes.getValue('Consumer-Manifest') == 'kept'
+            assert jar.manifest.mainAttributes.getValue('Dependency-Only') == null
+            assert jar.getInputStream(jar.getEntry(mainResource(path, '.clj'))).text.contains(sourceValue)
+            assert jar.getInputStream(jar.getEntry("runtime/${marker}.txt")).text == runtimeValue
+            assert jar.getInputStream(jar.getEntry('jar-extra.txt')).text == 'original Jar customization'
+            assert jar.getInputStream(jar.getEntry('consumer/uber-extra.txt')).text == 'uber Jar customization'
+            assert jar.getInputStream(jar.getEntry('application.txt')).text == 'application resources'
+        }
+        true
+    }
+
     private List<String> fixture(String topology) {
         def participants = topology == 'single' ? [':'] :
             (topology == 'multi' ? [':library', ':app'] : [':library', ':group:app'])
@@ -429,14 +605,17 @@ class IsolatedProjectsSpec extends BaseIntegrationTestKitSpec {
         participants
     }
 
-    private BuildResult execute(String version, boolean isolated, List<String> tasks, boolean fails = false) {
+    private BuildResult execute(String version, boolean isolated, List<String> tasks) {
         // Isolated Projects used the unsafe property before Gradle 9.7.
         def isolationProperty = GradleVersion.version(version) >= GradleVersion.version('9.7') ?
             'org.gradle.isolated-projects' : 'org.gradle.unsafe.isolated-projects'
         def arguments = tasks + ['--configuration-cache', '--configuration-cache-problems=fail',
                                  "-D${isolationProperty}=${isolated}"]
-        def invocation = runner(version, arguments)
-        fails ? invocation.buildAndFail() : invocation.build()
+        def result = runner(version, arguments).build()
+        if (isolated && !result.output.contains('Configuration cache entry reused')) {
+            assert result.output.toLowerCase().contains('isolated projects')
+        }
+        result
     }
 
     private GradleRunner runner(String version, List<String> arguments) {
