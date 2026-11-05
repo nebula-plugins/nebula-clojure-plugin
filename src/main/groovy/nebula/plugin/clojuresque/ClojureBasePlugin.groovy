@@ -131,16 +131,13 @@ class ClojureBasePlugin implements Plugin<Project> {
             dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."
             group = JavaBasePlugin.VERIFICATION_GROUP
-            // Read only this project's extras, at the same lazy task-configuration
-            // point as before. Local DSL values take precedence over Gradle properties.
+            // Resolve during lazy task configuration so local extras retain their override timing.
             def selectorProperty = "clojuresque.test.vars"
             def localExtras = project.extensions.extraProperties
-            if (localExtras.has(selectorProperty)) {
-                tests.set(localExtras.get(selectorProperty).split(",").toList())
-            } else {
-                tests.set(project.providers.gradleProperty(selectorProperty).map {
-                    it.split(",").toList()
-                }.orElse([]))
+            def selector = localExtras.has(selectorProperty) ? localExtras.get(selectorProperty) :
+                project.providers.gradleProperty(selectorProperty).orNull
+            if (selector != null) {
+                tests.set(selector.split(",").toList())
             }
             if (project.gradle.startParameter.taskNames.contains('--tests')) {
                 enabled = false

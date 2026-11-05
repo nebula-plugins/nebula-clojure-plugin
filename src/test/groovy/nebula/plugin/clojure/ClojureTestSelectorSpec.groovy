@@ -1,5 +1,6 @@
 package nebula.plugin.clojure
 
+import org.gradle.api.JavaVersion
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -8,8 +9,10 @@ import spock.lang.Unroll
 
 /** Functional coverage for test-selector ownership and task input tracking. */
 class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
-    // 8.0 is the assessed lower bound of README's 8.x claim, not a new support policy.
-    private static final List<String> VERSIONS = ['8.0', GradleVersion.current().version].unique()
+    // Gradle 8.0 supports Java 8–19; CI exercises it on Java 17.
+    private static final List<String> VERSIONS =
+        ((JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_20) ? [] : ['8.0']) +
+            [GradleVersion.current().version]).unique()
     private static final String KEY = 'clojuresque.test.vars'
     private static final String FIRST = 'selector.app-test/first-test'
     private static final String SECOND = 'selector.app-test/second-test'
@@ -24,32 +27,32 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def initialReuse = execute(version, isolated, participants)
 
         then:
-        stored(initial)
-        selected(initial, participants, ['first', 'second'])
-        reused(initialReuse)
-        outcomes(initialReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertStored(initial)
+        assertSelected(initial, participants, ['first', 'second'])
+        assertReused(initialReuse)
+        assertOutcomes(initialReuse, participants, TaskOutcome.UP_TO_DATE)
 
         when:
         def first = execute(version, isolated, participants, ["-P$KEY=$FIRST"])
         def firstReuse = execute(version, isolated, participants, ["-P$KEY=$FIRST"])
 
         then:
-        stored(first)
-        outcomes(first, participants, TaskOutcome.SUCCESS)
-        selected(first, participants, ['first'])
-        reused(firstReuse)
-        outcomes(firstReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertStored(first)
+        assertOutcomes(first, participants, TaskOutcome.SUCCESS)
+        assertSelected(first, participants, ['first'])
+        assertReused(firstReuse)
+        assertOutcomes(firstReuse, participants, TaskOutcome.UP_TO_DATE)
 
         when: 'a changed selector invalidates configuration and task inputs'
         def second = execute(version, isolated, participants, ["-P$KEY=$SECOND"])
         def secondReuse = execute(version, isolated, participants, ["-P$KEY=$SECOND"])
 
         then:
-        stored(second)
-        outcomes(second, participants, TaskOutcome.SUCCESS)
-        selected(second, participants, ['second'])
-        reused(secondReuse)
-        outcomes(secondReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertStored(second)
+        assertOutcomes(second, participants, TaskOutcome.SUCCESS)
+        assertSelected(second, participants, ['second'])
+        assertReused(secondReuse)
+        assertOutcomes(secondReuse, participants, TaskOutcome.UP_TO_DATE)
 
         when: 'editing selected test source reuses configuration but executes that project'
         def leaf = participants.last()
@@ -59,13 +62,13 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def editedReuse = execute(version, isolated, participants, ["-P$KEY=$SECOND"])
 
         then:
-        reused(edited)
+        assertReused(edited)
         edited.task(taskPath(leaf)).outcome == TaskOutcome.SUCCESS
         (participants - leaf).every { edited.task(taskPath(it)).outcome == TaskOutcome.UP_TO_DATE }
         edited.output.contains("$leaf:selected-second-edited")
         edited.output.contains('Ran 1 tests containing 1 assertions.')
-        reused(editedReuse)
-        outcomes(editedReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertReused(editedReuse)
+        assertOutcomes(editedReuse, participants, TaskOutcome.UP_TO_DATE)
 
         where:
         [version, isolated, topology] << [VERSIONS, [false, true], ['single', 'siblings', 'nested']].combinations()
@@ -85,10 +88,10 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def initialReuse = execute(version, isolated, participants)
 
         then:
-        stored(initial)
-        selected(initial, participants, ['first', 'second'])
-        reused(initialReuse)
-        outcomes(initialReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertStored(initial)
+        assertSelected(initial, participants, ['first', 'second'])
+        assertReused(initialReuse)
+        assertOutcomes(initialReuse, participants, TaskOutcome.UP_TO_DATE)
 
         when: 'each child owns its extra, which takes precedence over -P'
         participants.eachWithIndex { path, index ->
@@ -99,15 +102,15 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def localReuse = execute(version, isolated, participants, ["-P$KEY=$FIRST,$SECOND"])
 
         then:
-        stored(local)
-        outcomes(local, participants, TaskOutcome.SUCCESS)
+        assertStored(local)
+        assertOutcomes(local, participants, TaskOutcome.SUCCESS)
         participants.eachWithIndex { path, index ->
             assert local.output.contains("$path:selected-${index == 0 ? 'first' : 'second'}")
             assert !local.output.contains("$path:selected-${index == 0 ? 'second' : 'first'}")
         }
         local.output.count('Ran 1 tests containing 1 assertions.') == participants.size()
-        reused(localReuse)
-        outcomes(localReuse, participants, TaskOutcome.UP_TO_DATE)
+        assertReused(localReuse)
+        assertOutcomes(localReuse, participants, TaskOutcome.UP_TO_DATE)
 
         where:
         [version, isolated, topology] << [VERSIONS, [false, true], ['siblings', 'nested']].combinations()
@@ -116,40 +119,41 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
     @Unroll
     def 'selector precedence and timing: #scenario, isolation=#isolated'() {
         given:
-        fixture('single', beforeApply, customization)
-        if (properties) write('gradle.properties', "$KEY=$FIRST\n")
+        fixture('single', configuration.beforeApply ?: '', configuration.afterApply ?: '')
+        if (configuration.gradleProperty != null) {
+            write('gradle.properties', "$KEY=${configuration.gradleProperty}\n")
+        }
 
         when:
-        def first = execute(GradleVersion.current().version, isolated, [':'], arguments)
-        def second = execute(GradleVersion.current().version, isolated, [':'], arguments)
+        def first = execute(GradleVersion.current().version, isolated, [':'], configuration.arguments ?: [])
+        def second = execute(GradleVersion.current().version, isolated, [':'], configuration.arguments ?: [])
 
         then:
-        stored(first)
-        outcomes(first, [':'], TaskOutcome.SUCCESS)
-        selected(first, [':'], expected)
-        reused(second)
-        outcomes(second, [':'], TaskOutcome.UP_TO_DATE)
+        assertStored(first)
+        assertOutcomes(first, [':'], TaskOutcome.SUCCESS)
+        assertSelected(first, [':'], expected)
+        assertReused(second)
+        assertOutcomes(second, [':'], TaskOutcome.UP_TO_DATE)
 
         where:
-        [isolated, scenario, beforeApply, customization, properties, arguments, expected] <<
-            [false, true].collectMany { isolation ->
-                [
-                    ['absent selector retains empty list', '', "assert tasks.named('clojureTest').get().tests.get() == []", false, [], ['first', 'second']],
-                    ['Gradle property', '', '', true, [], ['first']],
-                    ['CLI overrides gradle.properties', '', '', true, ["-P$KEY=$SECOND"], ['second']],
-                    ['extra before apply overrides CLI', "ext.set('$KEY', '$FIRST')", '', false, ["-P$KEY=$SECOND"], ['first']],
-                    ['extra after apply overrides CLI', '', "ext.set('$KEY', '$FIRST')", false, ["-P$KEY=$SECOND"], ['first']],
-                    ['last extra before realization', '', "ext.set('$KEY', '$FIRST'); ext.set('$KEY', '$SECOND')", false, [], ['second']],
-                    ['extra after realization is too late', '', "ext.set('$KEY', '$FIRST'); tasks.named('clojureTest').get(); ext.set('$KEY', '$SECOND')", false, [], ['first']],
-                    ['explicit task override', '', "ext.set('$KEY', '$FIRST'); tasks.named('clojureTest') { tests.set(['$SECOND']) }", false, ["-P$KEY=$FIRST"], ['second']],
-                    ['explicit override after realization', '', "tasks.named('clojureTest').get().tests.set(['$SECOND'])", false, ["-P$KEY=$FIRST"], ['second']],
-                    ['explicit empty task selection', '', "tasks.named('clojureTest') { tests.set([]) }", false, ["-P$KEY=$FIRST"], ['first', 'second']],
-                    ['explicit absent task selection', '', "tasks.named('clojureTest') { tests.set(providers.gradleProperty('absent.selector').map { it.split(',').toList() }) }", false, ["-P$KEY=$FIRST"], ['first', 'second']],
-                    ['comma splitting with trailing comma', '', '', false, ["-P$KEY=$FIRST,$SECOND,"], ['first', 'second']],
-                    ['empty CLI selection', '', '', false, ["-P$KEY="], ['first', 'second']],
-                    ['empty local extra overrides CLI', '', "ext.set('$KEY', '')", false, ["-P$KEY=$FIRST"], ['first', 'second']]
-                ].collect { [isolation] + it }
-            }
+        scenario                              | expected            | configuration
+        'absent selector retains empty list'   | ['first', 'second'] | [afterApply: "assert tasks.named('clojureTest').get().tests.get() == []"]
+        'Gradle property'                     | ['first']           | [gradleProperty: FIRST]
+        'CLI overrides gradle.properties'     | ['second']          | [gradleProperty: FIRST, arguments: ["-P$KEY=$SECOND"]]
+        'extra before apply overrides CLI'    | ['first']           | [beforeApply: "ext.set('$KEY', '$FIRST')", arguments: ["-P$KEY=$SECOND"]]
+        'extra after apply overrides CLI'     | ['first']           | [afterApply: "ext.set('$KEY', '$FIRST')", arguments: ["-P$KEY=$SECOND"]]
+        'last extra before realization'       | ['second']          | [afterApply: "ext.set('$KEY', '$FIRST'); ext.set('$KEY', '$SECOND')"]
+        'extra after realization is too late' | ['first']           | [afterApply: "ext.set('$KEY', '$FIRST'); tasks.named('clojureTest').get(); ext.set('$KEY', '$SECOND')"]
+        'explicit task override'              | ['second']          | [afterApply: "ext.set('$KEY', '$FIRST'); tasks.named('clojureTest') { tests.set(['$SECOND']) }", arguments: ["-P$KEY=$FIRST"]]
+        'explicit override after realization' | ['second']          | [afterApply: "tasks.named('clojureTest').get().tests.set(['$SECOND'])", arguments: ["-P$KEY=$FIRST"]]
+        'explicit empty task selection'       | ['first', 'second'] | [afterApply: "tasks.named('clojureTest') { tests.set([]) }", arguments: ["-P$KEY=$FIRST"]]
+        'explicit absent task selection'      | ['first', 'second'] | [afterApply: "tasks.named('clojureTest') { tests.set(providers.gradleProperty('absent.selector').map { it.split(',').toList() }) }", arguments: ["-P$KEY=$FIRST"]]
+        'comma splitting with trailing comma' | ['first', 'second'] | [arguments: ["-P$KEY=$FIRST,$SECOND,"]]
+        'empty CLI selection'                 | ['first', 'second'] | [arguments: ["-P$KEY="]]
+        'empty local extra overrides CLI'     | ['first', 'second'] | [afterApply: "ext.set('$KEY', '')", arguments: ["-P$KEY=$FIRST"]]
+
+        combined:
+        isolated << [false, true]
     }
 
     @Unroll
@@ -166,10 +170,10 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def firstReuse = execute(GradleVersion.current().version, isolated, [':'])
 
         then:
-        stored(first)
-        selected(first, [':'], ['first'])
-        reused(firstReuse)
-        outcomes(firstReuse, [':'], TaskOutcome.UP_TO_DATE)
+        assertStored(first)
+        assertSelected(first, [':'], ['first'])
+        assertReused(firstReuse)
+        assertOutcomes(firstReuse, [':'], TaskOutcome.UP_TO_DATE)
 
         when:
         configureSelector(source, SECOND)
@@ -177,11 +181,11 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def changedReuse = execute(GradleVersion.current().version, isolated, [':'])
 
         then:
-        stored(changed)
-        outcomes(changed, [':'], TaskOutcome.SUCCESS)
-        selected(changed, [':'], ['second'])
-        reused(changedReuse)
-        outcomes(changedReuse, [':'], TaskOutcome.UP_TO_DATE)
+        assertStored(changed)
+        assertOutcomes(changed, [':'], TaskOutcome.SUCCESS)
+        assertSelected(changed, [':'], ['second'])
+        assertReused(changedReuse)
+        assertOutcomes(changedReuse, [':'], TaskOutcome.UP_TO_DATE)
 
         where:
         [isolated, source] << [[false, true], ['gradle.properties', 'local extra', 'task.tests']].combinations()
@@ -211,23 +215,23 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         def failed = execute(version, isolated, [':'], ["-P$KEY=selector.app-test/failing-test"], true)
 
         then:
-        stored(first)
-        selected(first, [':'], ['first'])
+        assertStored(first)
+        assertSelected(first, [':'], ['first'])
         failed.task(':clojureTest').outcome == TaskOutcome.FAILED
         failed.output.contains('selected-failure')
         failed.output.contains('FAIL in (failing-test)')
         failed.output.contains('1 failures, 0 errors.')
-        stored(failed)
+        assertStored(failed)
 
         when:
         def passing = execute(version, isolated, [':'], ["-P$KEY=$SECOND"])
         def passingReuse = execute(version, isolated, [':'], ["-P$KEY=$SECOND"])
 
         then:
-        outcomes(passing, [':'], TaskOutcome.SUCCESS)
-        selected(passing, [':'], ['second'])
-        reused(passingReuse)
-        outcomes(passingReuse, [':'], TaskOutcome.UP_TO_DATE)
+        assertOutcomes(passing, [':'], TaskOutcome.SUCCESS)
+        assertSelected(passing, [':'], ['second'])
+        assertReused(passingReuse)
+        assertOutcomes(passingReuse, [':'], TaskOutcome.UP_TO_DATE)
 
         where:
         [version, isolated] << [VERSIONS, [false, true]].combinations()
@@ -273,32 +277,28 @@ class ClojureTestSelectorSpec extends BaseIntegrationTestKitSpec {
         fails ? runner.buildAndFail() : runner.build()
     }
 
-    private static boolean stored(BuildResult result) {
+    private static void assertStored(BuildResult result) {
         assert result.output.contains('Configuration cache entry stored')
         assert !result.output.contains('Configuration cache problems found')
         assert !result.output.contains('Reusing configuration cache.')
-        true
     }
 
-    private static boolean reused(BuildResult result) {
+    private static void assertReused(BuildResult result) {
         assert result.output.contains('Configuration cache entry reused')
         assert !result.output.contains('Configuration cache problems found')
-        true
     }
 
-    private static boolean outcomes(BuildResult result, List<String> participants, TaskOutcome outcome) {
+    private static void assertOutcomes(BuildResult result, List<String> participants, TaskOutcome outcome) {
         participants.each { assert result.task(taskPath(it)).outcome == outcome }
-        true
     }
 
-    private static boolean selected(BuildResult result, List<String> participants, List<String> expected) {
+    private static void assertSelected(BuildResult result, List<String> participants, List<String> expected) {
         participants.each { path ->
             ['first', 'second'].each { test ->
                 assert result.output.contains("$path:selected-$test") == expected.contains(test)
             }
         }
         assert result.output.count("Ran ${expected.size()} tests containing ${expected.size()} assertions.") == participants.size()
-        true
     }
 
     private void write(String path, String content) {
