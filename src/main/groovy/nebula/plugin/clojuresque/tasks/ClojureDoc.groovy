@@ -22,12 +22,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
@@ -57,9 +55,14 @@ abstract class ClojureDoc extends ClojureSourceTask {
     @Input
     abstract Property<String> getProjectVersion()
 
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
+    // A base for source links, not a directory whose contents are consumed.
+    @Internal
     abstract DirectoryProperty getProjectDirectory()
+
+    @Input
+    List<String> getSourceDirectoryPaths() {
+        srcDirs.files.collect { relativize(it, projectDirectory.get().asFile) }
+    }
 
     private final ExecOperations execOperations
     private final ObjectFactory objectFactory
@@ -90,9 +93,7 @@ abstract class ClojureDoc extends ClojureSourceTask {
                 version:     projectVersion.get()
             ],
             codox:           codox.get(),
-            sourceDirs:      srcDirs.files.collect {
-                relativize(it, projectDirectory.get().asFile)
-            },
+            sourceDirs:      sourceDirectoryPaths,
             sourceFiles:     source*.path
         ]
 
