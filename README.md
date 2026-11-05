@@ -45,7 +45,25 @@ must also apply the Clojure plugin, directly or through a local convention plugi
 
 The selector path is tested with strict configuration-cache validation in single,
 sibling, and nested projects on Gradle 8.0 and the current wrapper (9.2.1), both
-with and without Isolated Projects. Enabled uber-JAR configuration-cache issues
-and overly broad documentation inputs remain unresolved. This coverage establishes
+with and without Isolated Projects. This coverage establishes
 selector behavior only, without claiming whole-plugin isolation compatibility or
 defining a new minimum supported Gradle/JDK version.
+
+# Documentation inputs
+
+`build clojuredoc` can run together with strict configuration-cache validation,
+including Isolated Projects, in single, sibling, and nested projects where each
+participating project applies and configures the plugin locally. Coverage uses
+Gradle 8.0 on a compatible JVM and the current wrapper (9.2.1).
+
+Documentation tracks Clojure source files, relative source-directory paths,
+classpath dependencies, Codox options, and project name, description, and version.
+`ClojureDoc.projectDirectory` remains a `DirectoryProperty` used as the base for
+source-link paths; unrelated project files and build outputs are no longer inputs.
+Generated HTML, source links, static assets, configuration-cache reuse, and
+regeneration after output deletion are verified.
+
+These checks do not define a new minimum supported Gradle/JDK version or establish
+whole-plugin isolation compatibility. Cross-project consumer configuration must
+still be replaced with local configuration for Isolated Projects. Enabled
+uber-JAR tasks remain a separate configuration-cache limitation.
