@@ -47,7 +47,8 @@ abstract class ClojureTest extends ClojureSourceTask {
     @Optional
     abstract Property<File> getJunitOutputDir()
 
-    @Internal
+    @Input
+    @Optional
     abstract ListProperty<String> getTests()
 
     private final ExecOperations execOperations

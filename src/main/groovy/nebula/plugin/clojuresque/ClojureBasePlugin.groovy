@@ -131,8 +131,13 @@ class ClojureBasePlugin implements Plugin<Project> {
             dependsOn project.tasks.classes, project.configurations.testRuntimeClasspath
             description = "Run Clojure tests in src/test."
             group = JavaBasePlugin.VERIFICATION_GROUP
-            if (project.hasProperty("clojuresque.test.vars")) {
-                tests.set(project.property("clojuresque.test.vars").split(",").toList())
+            // Resolve during lazy task configuration so local extras retain their override timing.
+            def selectorProperty = "clojuresque.test.vars"
+            def localExtras = project.extensions.extraProperties
+            def selector = localExtras.has(selectorProperty) ? localExtras.get(selectorProperty) :
+                project.providers.gradleProperty(selectorProperty).orNull
+            if (selector != null) {
+                tests.set(selector.split(",").toList())
             }
             if (project.gradle.startParameter.taskNames.contains('--tests')) {
                 enabled = false
