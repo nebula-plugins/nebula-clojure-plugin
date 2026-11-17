@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'com.netflix.nebula.plugin-plugin' version '25.+'
+    id 'com.netflix.nebula.plugin-plugin'
     id 'java-gradle-plugin'
 }
 
@@ -46,19 +46,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        nebulaClojureLegacy {
-            id = 'nebula.clojure'
-            displayName = 'Nebula Clojure'
-            description = project.description
-            implementationClass = 'nebula.plugin.clojure.NebulaClojurePlugin'
-            tags.set(['nebula', 'clojure'])
-            compatibility {
-                features {
-                    configurationCache = true
-                }
-            }
-        }
-        nebulaClojure {
+        create('com.netflix.nebula.clojure') {
             id = 'com.netflix.nebula.clojure'
             displayName = 'Nebula Clojure'
             description = project.description
