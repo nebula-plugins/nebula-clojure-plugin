@@ -255,10 +255,10 @@ class IsolatedProjectsSpec extends BaseIntegrationTestKitSpec {
     }
 
     @Unroll
-    def 'legacy ID with deps and Maven publishing on Gradle #version, isolation=#isolated'() {
+    def 'plugin with deps and Maven publishing on Gradle #version, isolation=#isolated'() {
         given:
         fixture('single')
-        buildFile.text = buildFile.text.replace("id 'com.netflix.nebula.clojure'", "id 'nebula.clojure'; id 'maven-publish'")
+        buildFile.text = buildFile.text.replace("id 'com.netflix.nebula.clojure'", "id 'com.netflix.nebula.clojure'; id 'maven-publish'")
         buildFile << '''
             description = 'Assessment documentation'
             publishing {
